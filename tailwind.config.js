@@ -14,7 +14,12 @@ module.exports = {
       footerBg: "#008282",
       text1: "#caffff",
       text2: "#000000",
-      bgLight: "#caffff"
+      bgLight: "#caffff",
+      disabled: "#494949",
+      bronze: "#8d472f",
+      silver: "#b2b2b2",
+      gold: "#c1ac03",
+      emerald: "#04651f"
     },
   },
   plugins: [],

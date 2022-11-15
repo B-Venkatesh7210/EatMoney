@@ -3,7 +3,16 @@
 @tailwind utilities;
 
 .main {
-    /* background: radial-gradient(122.98% 122.98% at 50% 50%, #0C0606 0%, #0C0606 0.01%, #005889 100%); */
-    background: #121F21;
-  }
+  /* background: radial-gradient(122.98% 122.98% at 50% 50%, #0C0606 0%, #0C0606 0.01%, #005889 100%); */
+  background: #121f21;
+  height: 100%;
+  width: 100vw;
+  overflow: hidden;
+}
 
+.marketplace {
+  height: 100vh;
+  height: -webkit-fill-available;
+  -webkit-overflow-scrolling: touch;
+  overflow: scroll;
+}

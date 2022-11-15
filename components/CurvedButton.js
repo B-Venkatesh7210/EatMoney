@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import Matic from "../assets/images/Polygon Matic.png";
+import Matic from "../assets/logos/Polygon Matic.png";
 
 const CurvedButton = ({
   width,
