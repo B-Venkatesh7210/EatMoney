@@ -7,11 +7,14 @@ module.exports = {
   theme: {
     colors: {
       mainBg: "#CAFFFF",
-      bg1: "#22AFAF",
-      bg2: "#3BF9F9",
+      bg1: "#0A4A57",
+      bg2: "#00CFCF",
       bgRed: "#921C1C",
       bgGreen: "#25AF3B",
-      footerBg: "#008282"
+      footerBg: "#008282",
+      text1: "#caffff",
+      text2: "#000000",
+      bgLight: "#caffff"
     },
   },
   plugins: [],

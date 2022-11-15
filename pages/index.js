@@ -1,10 +1,9 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import { useRouter } from "next/router";
-
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export default function Home() {
-
   const router = useRouter();
 
   return (
@@ -15,14 +14,25 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="h-screen w-full flex flex-col justify-center items-center">
-        <button
-          className="w-[10rem] h-12 bg-red-400"
-          onClick={() => {
-            router.push("/HomePage");
-          }}
-        >
-          Enter Dapp
-        </button>
+        <div className="flex flex-row justify-center items-center">
+          <button
+            className="w-[10rem] h-12 bg-bg1"
+            onClick={() => {
+              router.push("/HomePage");
+            }}
+          >
+            Enter Dapp
+          </button>
+          <ConnectButton showBalance={true}></ConnectButton>
+          <button
+            className="w-[10rem] h-12 bg-bg1"
+            onClick={() => {
+              router.push("/Restaurant");
+            }}
+          >
+            Enter Restaurant
+          </button>
+        </div>
       </div>
     </div>
   );

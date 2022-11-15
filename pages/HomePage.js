@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import Nft from "../assets/images/Sample NFT.png";
+import Nft from "../assets/images/Sample NFT.svg";
 import Navbar from "../components/Navbar";
 import CurvedButton from "../components/CurvedButton";
 import ProgressButton from "../components/ProgressButton";
-import LevelButton from "../components/LevelButton";
 import NftAtrributes from "../components/NftAtrributes";
 import { useRouter } from "next/dist/client/router";
 import Footer from "../components/Footer";
@@ -12,50 +11,79 @@ import ReactModal from "react-modal";
 import Button from "../components/Button";
 
 const HomePage = () => {
-  const progress = "30%";
+  const progress = 80;
   const [levelUpModal, setLevelUpModal] = useState(false);
   const [addPointsModal, setAddPointsModal] = useState(false);
   const [pointsData, setPointsData] = useState({
-    efficiency: 0,
-    fortune: 0,
-    durability: 0,
+    efficiency: 10,
+    fortune: 12,
+    durability: 8,
+  });
+  const [apiPointsData, setApiPointsData] = useState({
+    efficiency: 10,
+    fortune: 12,
+    durability: 8,
   });
   const [totalPoints, setTotalPoints] = useState(10);
+  const [apiTotalPoints, setApiTotalPoints] = useState(10);
   const router = useRouter();
 
   const increment = (value) => {
-    if (value === 0) {
-      let efficiency = pointsData.efficiency;
-      let points = totalPoints;
-      setPointsData({ ...pointsData, efficiency: ++efficiency });
-      setTotalPoints(--points);
-    } else if (value === 1) {
-      setPointsData(...pointsData, fortune++);
-      //   setTotalPoints(totalPoints = totalPoints--);
-    } else {
-      setPointsData(...pointsData, durability++);
-      //   setTotalPoints(totalPoints--);
-    }
+    if (totalPoints > 0) {
+      if (value === 0) {
+        let efficiency = pointsData.efficiency;
+        let points = totalPoints;
+        setPointsData({ ...pointsData, efficiency: ++efficiency });
+        setTotalPoints(--points);
+      } else if (value === 1) {
+        let fortune = pointsData.fortune;
+        let points = totalPoints;
+        setPointsData({ ...pointsData, fortune: ++fortune });
+        setTotalPoints(--points);
+      } else {
+        let durability = pointsData.durability;
+        let points = totalPoints;
+        setPointsData({ ...pointsData, durability: ++durability });
+        setTotalPoints(--points);
+      }
+    } else return;
   };
 
   const decrement = (value) => {
-    if (value === 0) {
-      let efficiency = pointsData.efficiency-1;
-      if(efficiency<pointsData.efficiency)  //replace pointsData.efficiency with Api one
-      return;  
-      setPointsData(...pointsData, efficiency--);
-      //   setTotalPoints(totalPoints++);
-    } else if (value === 1) {
-      setPointsData(...pointsData, fortune--);
-      //   setTotalPoints(totalPoints++);
-    } else {
-      setPointsData(...pointsData, durability--);
-      // setTotalPoints(totalPoints++);
-    }
+    if (totalPoints <= apiTotalPoints) {
+      if (value === 0) {
+        let efficiency = pointsData.efficiency;
+        let points = totalPoints;
+        if (efficiency <= apiPointsData.efficiency) {
+          //replace pointsData.efficiency with Api one
+          return;
+        }
+        setPointsData({ ...pointsData, efficiency: --efficiency });
+        setTotalPoints(++points);
+      } else if (value === 1) {
+        let fortune = pointsData.fortune;
+        let points = totalPoints;
+        if (fortune <= apiPointsData.fortune) {
+          //replace pointsData.efficiency with Api one
+          return;
+        }
+        setPointsData({ ...pointsData, fortune: --fortune });
+        setTotalPoints(++points);
+      } else {
+        let durability = pointsData.durability;
+        let points = totalPoints;
+        if (durability <= apiPointsData.durability) {
+          //replace pointsData.efficiency with Api one
+          return;
+        }
+        setPointsData({ ...pointsData, durability: --durability });
+        setTotalPoints(++points);
+      }
+    } else return;
   };
 
   return (
-    <div className="h-screen w-full flex flex-col justify-start items-center bg-mainBg overflow-hidden">
+    <div className="main h-screen w-full flex flex-col justify-start items-center bg-mainBg overflow-hidden">
       {/* Modal for Level Up */}
       <ReactModal
         className="bg-none flex flex-col justify-center items-center outline-none"
@@ -138,7 +166,7 @@ const HomePage = () => {
                   decrement(0);
                 }}
               ></div>
-              <span className="font-semibold text-2xl italic mx-4">
+              <span className="font-semibold text-2xl italic w-10 flex flex-row justify-center mx-2">
                 {pointsData.efficiency}
               </span>
               <div
@@ -158,7 +186,7 @@ const HomePage = () => {
                   decrement(1);
                 }}
               ></div>
-              <span className="font-semibold text-2xl italic mx-4">
+             <span className="font-semibold text-2xl italic w-10 flex flex-row justify-center mx-2">
                 {pointsData.fortune}
               </span>
               <div
@@ -178,7 +206,7 @@ const HomePage = () => {
                   decrement(2);
                 }}
               ></div>
-              <span className="font-semibold text-2xl italic mx-4">
+             <span className="font-semibold text-2xl italic w-10 flex flex-row justify-center mx-2">
                 {pointsData.durability}
               </span>
               <div
@@ -214,43 +242,33 @@ const HomePage = () => {
         <div className="mx-6">
           <Image alt="sample nft" src={Nft} width="400" height="400"></Image>
         </div>
-        <div className="w-full flex flex-row justify-between items-end mt-10">
+        <div className="w-full flex flex-row justify-around items-end mt-10">
           <CurvedButton
-            width="w-[6rem]"
+            width="w-[8rem]"
             height="h-[3rem]"
             bg="bg-bg2"
-            title="Common"
-          ></CurvedButton>
-          <CurvedButton
-            width="w-[6rem]"
-            height="h-[3rem]"
-            bg="bg-bg2"
+            textSize="text-base"
             title="Emerald"
           ></CurvedButton>
-          <ProgressButton
-            width="w-[6rem]"
+          <CurvedButton
+            width="w-[8rem]"
             height="h-[3rem]"
+            bg="bg-bg2"
+            textSize="text-base"
+            title="Level 4"
+          ></CurvedButton>
+        </div>
+        <div className="w-full flex flex-row justify-center items-center mt-10">
+     
+          <ProgressButton
+            width="w-full"
+            height="h-[4rem]"
             title="Shiny"
-            progress={`w-[${progress}]`}
-            // progress="w-[50%]"
+            max={100}
+            progress={progress}
+            // progress="w-[100%]"
             title2={progress}
           ></ProgressButton>
-        </div>
-        {/* <div className="w-full flex flex-row justify-center items-center mt-4">
-          <CurvedButton
-            width="w-[6rem]"
-            height="h-[3rem]"
-            bg="bg-bg1"
-            title="Cap"
-          ></CurvedButton>
-        </div> */}
-        <div className="w-full flex flex-row justify-center items-center mt-6">
-          <LevelButton
-            width="w-full"
-            height="h-[2.5rem]"
-            progress="w-[25%]"
-            title="Level"
-          ></LevelButton>
         </div>
         <NftAtrributes></NftAtrributes>
       </div>

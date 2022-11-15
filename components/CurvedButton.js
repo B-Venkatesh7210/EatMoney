@@ -1,11 +1,31 @@
-import React from 'react'
+import React from "react";
+import Image from "next/image";
+import Matic from "../assets/images/Polygon Matic.png";
 
-const CurvedButton = ({width, height, bg, title}) => {
+const CurvedButton = ({
+  width,
+  height,
+  bg,
+  textSize,
+  title,
+  subtitle,
+  subtitleText,
+  action,
+}) => {
   return (
-    <div className={`${width} ${height} ${bg} flex flex-row justify-center items-center rounded-2xl border-t-[1px] border-l-[1px] border-b-[3px] border-r-[3px]`}>
-        <span className='font-medium text-base'>{title}</span>
+    <div
+      className={`${width} ${height} ${bg} flex flex-col justify-center items-center rounded-2xl border-r-[5px] border-b-[5px] shadow-[5px_5px_0px_#0A4957] ring-inset`}
+      onClick={action}
+    >
+      <span className={`font-medium ${textSize}`}>{title}</span>
+      {subtitle && (
+        <span className={`font-medium text-sm flex flex-row justify-center items-center`}>
+          {subtitleText}{" "}
+          <Image alt="Matic Logo" src={Matic} width="20" height="20" className="ml-2"></Image>
+        </span>
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default CurvedButton
+export default CurvedButton;
