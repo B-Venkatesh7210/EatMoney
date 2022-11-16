@@ -5,9 +5,9 @@
 .main {
   /* background: radial-gradient(122.98% 122.98% at 50% 50%, #0C0606 0%, #0C0606 0.01%, #005889 100%); */
   background: #121f21;
-  height: 100%;
+  height: 100vh;
   width: 100vw;
-  overflow: hidden;
+  overflow-y: hidden;
 }
 
 .marketplace {

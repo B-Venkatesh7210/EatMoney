@@ -18,7 +18,7 @@ export default function Home() {
           <button
             className="w-[10rem] h-12 bg-bg1"
             onClick={() => {
-              router.push("/MarketPlace");
+              router.push("/HomePage");
             }}
           >
             Enter Dapp
