@@ -10,8 +10,9 @@ const Navbar = ({setNavStatus}) => {
     {/* <span onClick={()=>{setNavStatus({home:true, marketPlace: false, history: false})}}>Home</span>
       <ConnectButton></ConnectButton> */}
       <div className="flex flex-row justify-center items-center">
+      <Image alt="Eat Coin" src={EatCoin} width="25" height="25" className="mr-2"></Image>
         <span className="font-bold text-lg">{10}</span>
-        <Image alt="Eat Coin" src={EatCoin} width="30" height="30" className="ml-3"></Image>
+        
       </div>
       <div onClick={()=>{setNavStatus({home: true, marketPlace: false, history: false})}}>
         <Image alt="Eat Money Logo" src={EatMoneyLogo} height="80" width="80" className="absolute z-10 top-[-5px] right-[42%]"></Image>

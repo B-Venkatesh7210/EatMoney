@@ -31,6 +31,8 @@ const HomePage = () => {
   const [sellNftModal, setSellNftModal] = useState(false);
   const [categoryModal, setCategoryModal] = useState(false);
   const [levelModal, setLevelModal] = useState(false);
+  const [paymentConfirmModal, setPaymentConfirmModal] = useState(false);
+  const [paymentSuccessModal, setPaymentSuccessModal] = useState(false);
   const [sellingPrice, setSellingPrice] = useState();
   const [pointsData, setPointsData] = useState({
     efficiency: 10,
@@ -440,7 +442,7 @@ const HomePage = () => {
         }}
       >
         <div className="h-auto w-[90%] bg-bg2/80 rounded-[2rem] border-[3px] mx-6 mt-[20%] flex flex-col justify-start items-center p-4 z-[10]">
-          <span className="font-semibold text-3xl flex flex-row">
+          <span className="font-bold text-3xl flex flex-row">
             Level Up{" "}
             <Image
               alt="Level Up"
@@ -550,7 +552,7 @@ const HomePage = () => {
         }}
       >
         <div className="h-auto w-[90%] bg-bg2/80 rounded-[2rem] border-[3px] mx-6 mt-[20%] flex flex-col justify-start items-center p-4 z-[20]">
-          <span className="font-semibold text-3xl italic">Add Points</span>
+          <span className="font-bold text-3xl">Add Points</span>
           <div className="w-full flex flex-row justify-start items-baseline mt-4 ml-6">
             <span className="font-semibold text-xl italic mt-4">
               Available Points:
@@ -654,7 +656,7 @@ const HomePage = () => {
         }}
       >
         <div className="h-auto w-[90%] bg-bg2/80 rounded-[2rem] border-[3px] mx-6 mt-[20%] flex flex-col justify-start items-center p-4 z-[20]">
-          <span className="font-semibold text-3xl">Sell NFT </span>
+          <span className="font-bold text-3xl">Sell NFT </span>
           <div className="mx-6 mt-4">
             <Image alt="sample nft" src={Nft} width="200" height="200"></Image>
           </div>
@@ -735,7 +737,7 @@ const HomePage = () => {
         }}
       >
         <div className="h-auto w-[90%] bg-bg2/80 rounded-[2rem] border-[3px] mx-6 mt-[40%] flex flex-col justify-start items-center p-4 z-[10]">
-          <span className="font-semibold text-3xl">Categories</span>
+          <span className="font-bold text-3xl">Categories</span>
           <div className="w-[90%] flex flex-col justify-center items-center mt-6">
             <div
               className="w-full h-[3rem] rounded-xl bg-emerald flex flex-row border-[3px] border-text2 justify-center items-center text-lg font-bold text-text2 mb-4"
@@ -791,7 +793,7 @@ const HomePage = () => {
         }}
       >
         <div className="h-auto w-[90%] bg-bg2/80 rounded-[2rem] border-[3px] mx-6 mt-[40%] flex flex-col justify-start items-center p-4 z-[10]">
-          <span className="font-semibold text-3xl">Levels</span>
+          <span className="font-bold text-3xl">Levels</span>
           <div className="w-[90%] flex flex-col justify-center items-center mt-6">
             <div
               className="w-full h-[3rem] rounded-xl bg-bg1 flex flex-row border-[3px] border-text2 justify-center items-center text-lg font-bold text-text1 mb-4"
@@ -834,10 +836,139 @@ const HomePage = () => {
       </ReactModal>
       {/* Modal for Level */}
 
+      {/* Modal for Payment Confirmation */}
+      <ReactModal
+        className="bg-none flex flex-col justify-center items-center outline-none"
+        isOpen={paymentConfirmModal}
+        onRequestClose={() => setPaymentConfirmModal(false)}
+        style={{
+          overlay: {
+            backgroundColor: "rgb(21, 96, 96, 0.2)",
+            backdropFilter: "blur(5px)",
+          },
+        }}
+      >
+        <div className="h-auto w-[90%] bg-bg2/80 rounded-[2rem] border-[3px] mx-6 mt-[40%] flex flex-col justify-start items-center p-4 z-[10]">
+          <span className="font-bold text-3xl">Confirm Payment</span>
+          <span className="font-medium text-xl mt-4">Restaurant Name</span>
+          <div className="w-[85%] h-auto py-4 px-2 bg-bg1 rounded-xl mt-2 border-[2px] border-text2 text-text1 flex flex-col justify-start items-start">
+            <span>2 x Bhature</span>
+          </div>
+          <div className="w-[90%] flex flex-row justify-between items-start mt-4">
+            <div className="flex flex-col justify-center items-start">
+              <span className="font-medium text-lg">Total Charge</span>
+              <div className="w-full flex flex-col justify-start items-start mt-2">
+                <span className="font-bold text-xl">
+                  <span className="ml-2">$</span>{" "}
+                  <span className="ml-3">{400}</span>
+                </span>
+                <span className="font-bold text-xl flex flex-row justify-center items-center mt-2">
+                  <Image
+                    alt="Matic Logo"
+                    src={Matic}
+                    width="30"
+                    height="30"
+                  ></Image>
+                  <span className="ml-2">{30}</span>
+                </span>
+              </div>
+            </div>
+            <div className="flex flex-col justify-center items-end">
+              <span className="font-medium text-lg">Approx. EAT</span>
+              <div className="w-full flex flex-col justify-start items-end   mt-2">
+                <span className="font-bold text-xl flex flex-row justify-center items-center mt-2">
+                  <Image
+                    alt="Eat Coin Logo"
+                    src={EatCoin}
+                    width="30"
+                    height="30"
+                  ></Image>
+                  {/* <span className="mx-2">+</span> */}
+                  <span className="ml-2">+{300}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="w-full flex flex-row justify-between items-center px-2 mt-6">
+            <Button
+              width="w-[46%]"
+              height="h-[3rem]"
+              bg="bg-none"
+              title="CANCEL"
+              action={() => {
+                setPaymentConfirmModal(false);
+              }}
+            ></Button>
+            <Button
+              width="w-[46%]"
+              height="h-[3rem]"
+              bg={`${currShiny < 100 ? "bg-disabled" : "bg-mainBg/90"}`}
+              title="CONFIRM"
+              action={() => {}}
+              disabled={currShiny > 100}
+            ></Button>
+          </div>
+        </div>
+      </ReactModal>
+      {/* Modal for Payment Confirmation */}
+
+      {/* Modal for Payment Successful */}
+      <ReactModal
+        className="bg-none flex flex-col justify-center items-center outline-none"
+        isOpen={paymentSuccessModal}
+        onRequestClose={() => setPaymentSuccessModal(false)}
+        style={{
+          overlay: {
+            backgroundColor: "rgb(21, 96, 96, 0.2)",
+            backdropFilter: "blur(5px)",
+          },
+        }}
+      >
+        <div className="h-auto w-[90%] bg-bg2/80 rounded-[2rem] border-[3px] mx-6 mt-[40%] flex flex-col justify-start items-center p-4 z-[10]">
+          <span className="font-bold text-3xl">Payment Successful</span>
+          <div className="w-[70%] flex flex-row justify-between items-center mt-6">
+            <span className="font-bold text-[2rem] flex flex-row justify-center items-center">
+              <span className="ml-2">$</span>{" "}
+              <span className="ml-3">{400}</span>
+            </span>
+            <span className="font-bold text-[2rem] flex flex-row justify-center items-center">
+              <Image
+                alt="Matic Logo"
+                src={Matic}
+                width="25"
+                height="25"
+              ></Image>
+              <span className="ml-2">{30}</span>
+            </span>
+          </div>
+          <span className="font-bold text-xl mt-4">Try Your Luck</span>
+            <div className="w-full flex flex-row justify-between items-center px-2 mt-6">
+            <Button
+              width="w-[46%]"
+              height="h-[3rem]"
+              bg="bg-none"
+              title="CANCEL"
+              action={() => {
+                setPaymentConfirmModal(false);
+              }}
+            ></Button>
+            <Button
+              width="w-[46%]"
+              height="h-[3rem]"
+              bg={`${currShiny < 100 ? "bg-disabled" : "bg-mainBg/90"}`}
+              title="CONFIRM"
+              action={() => {}}
+              disabled={currShiny > 100}
+            ></Button>
+          </div>
+        </div>
+      </ReactModal>
+      {/* Modal for Payment Successful */}
+
       <Navbar setNavStatus={setNavStatus}></Navbar>
       {navStatus.home ? (
         <div className="w-full px-6 mt-[12vh] flex flex-col justify-center items-center">
-          {hasNft ? (
+          {!hasNft ? (
             <>
               <div className="mx-6">
                 <Image
@@ -866,7 +997,7 @@ const HomePage = () => {
               <div className="w-full flex flex-row justify-center items-center mt-10">
                 <ProgressButton
                   width="w-full"
-                  height="h-[4rem]"
+                  height="h-[5rem]"
                   title="Shiny"
                   max={100}
                   progress={progress}
@@ -938,7 +1069,13 @@ const HomePage = () => {
           </div>
           <div className="w-full h-auto grid grid-cols-2 gap-4 mt-8 overflow-scroll px-2">
             {nftPlates.map((nftPlate) => (
-              <div key={nftPlate} className={`${nftPlates[nftPlates.length-1].tokenId == nftPlate.tokenId && "mb-[15rem]"}`}>
+              <div
+                key={nftPlate}
+                className={`${
+                  nftPlates[nftPlates.length - 1].tokenId == nftPlate.tokenId &&
+                  "mb-[15rem]"
+                }`}
+              >
                 <NftPlateMP nftPlate={nftPlate}></NftPlateMP>
               </div>
             ))}

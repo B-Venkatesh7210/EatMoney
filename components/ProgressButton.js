@@ -15,8 +15,8 @@ const ProgressButton = ({ width, height, title, max, progress, title2 }) => {
 
   return (
     <div className={`${width} ${height} flex flex-col justify-start items-center`}>
-      <div className="w-2/6 h-8 bg-bg2 border-t-[2px] border-l-[2px] border-r-[2px] rounded-[0.5rem_0.5rem_0_0] flex flex-row justify-center items-center">
-        <span className="font-medium text-base mr-2">{title}</span>
+      <div className="w-[8rem] h-20 bg-bg2 border-t-[5px] border-r-[5px] rounded-[0.5rem_0.5rem_0_0] flex flex-row justify-center items-center shadow-[5px_-3px_0px_#0A4957]">
+        <span className="font-bold text-lg mr-2">{title}</span>
         <span className="font-medium text-base ml-2">{title2}%</span>
       </div>
       <div
