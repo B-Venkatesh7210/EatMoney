@@ -16,3 +16,37 @@
   -webkit-overflow-scrolling: touch;
   overflow: scroll;
 }
+
+.seeSawAnim {
+  transform: rotateZ(0deg);
+  animation: rotateSeeSaw 5s ease-in-out infinite;
+}
+
+@keyframes rotateSeeSaw {
+  0%,
+  100% {
+    transform: rotateZ(3deg);
+  }
+  50% {
+    transform: rotateZ(-3deg);
+  }
+}
+
+.logoAnim {
+  transform: rotateZ(0deg);
+  animation: rotateLogo 5s ease-in-out infinite;
+}
+
+@keyframes rotateLogo {
+  0%,
+  100% {
+    transform: rotateZ(-3deg);
+  }
+  50% {
+    transform: rotateZ(3deg);
+  }
+}
+
+.paymentSuccess{
+  background-image: url("../assets/images/confetti-unscreen.gif");
+}

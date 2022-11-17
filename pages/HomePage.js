@@ -924,7 +924,7 @@ const HomePage = () => {
           },
         }}
       >
-        <div className="h-auto w-[90%] bg-bg2/80 rounded-[2rem] border-[3px] mx-6 mt-[40%] flex flex-col justify-start items-center p-4 z-[10]">
+        <div className="h-auto w-[90%] bg-bg2/80 rounded-[2rem] border-[3px] mx-6 mt-[40%] flex flex-col justify-start items-center p-4 z-[10] paymentSuccess">
           <span className="font-bold text-3xl">Payment Successful</span>
           <div className="w-[70%] flex flex-row justify-between items-center mt-6">
             <span className="font-bold text-[2rem] flex flex-row justify-center items-center">
@@ -935,21 +935,32 @@ const HomePage = () => {
               <Image
                 alt="Matic Logo"
                 src={Matic}
-                width="25"
-                height="25"
+                width="30"
+                height="30"
               ></Image>
               <span className="ml-2">{30}</span>
             </span>
           </div>
-          <span className="font-bold text-xl mt-4">Try Your Luck</span>
-            <div className="w-full flex flex-row justify-between items-center px-2 mt-6">
+          <span className="font-bold text-xl mt-4">You Got</span>
+          <span className="font-bold text-[2rem] flex flex-row justify-center items-center mt-4">
+          <span>{30}</span>
+              <Image
+                alt="Matic Logo"
+                src={EatCoin}
+                width="30"
+                height="30"
+                className="ml-2"
+              ></Image>
+             
+            </span>
+          <div className="w-full flex flex-row justify-between items-center px-2 mt-6">
             <Button
               width="w-[46%]"
               height="h-[3rem]"
               bg="bg-none"
               title="CANCEL"
               action={() => {
-                setPaymentConfirmModal(false);
+                setPaymentSuccessModal(false);
               }}
             ></Button>
             <Button
@@ -967,7 +978,7 @@ const HomePage = () => {
 
       <Navbar setNavStatus={setNavStatus}></Navbar>
       {navStatus.home ? (
-        <div className="w-full px-6 mt-[12vh] flex flex-col justify-center items-center">
+        <div className="w-full px-6 mt-[12vh] mb-[10vh] flex flex-col justify-center items-center">
           {!hasNft ? (
             <>
               <div className="mx-6">
