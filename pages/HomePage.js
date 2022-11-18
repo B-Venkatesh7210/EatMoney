@@ -39,6 +39,7 @@ const HomePage = () => {
   const [levelModal, setLevelModal] = useState(false);
   const [paymentConfirmModal, setPaymentConfirmModal] = useState(false);
   const [paymentSuccessModal, setPaymentSuccessModal] = useState(false);
+  const [cleanModal, setCleanModal] = useState(false);
   const [sellingPrice, setSellingPrice] = useState();
   const [pointsData, setPointsData] = useState({
     efficiency: 0,
@@ -1053,6 +1054,55 @@ const HomePage = () => {
       </ReactModal>
       {/* Modal for Payment Successful */}
 
+      {/* Modal for Payment Cleaning */}
+      <ReactModal
+        className="bg-none flex flex-col justify-center items-center outline-none"
+        isOpen={cleanModal}
+        onRequestClose={() => setCleanModal(false)}
+        style={{
+          overlay: {
+            backgroundColor: "rgb(21, 96, 96, 0.2)",
+            backdropFilter: "blur(5px)",
+          },
+        }}
+      >
+        <div className="h-auto w-[90%] bg-bg2/80 rounded-[2rem] border-[3px] mx-6 mt-[40%] flex flex-col justify-start items-center p-4 z-[10]">
+          <span className="font-bold text-3xl">Clean Plate</span>
+          <div className="w-[70%] flex flex-row justify-center items-center mt-6">
+            <span className="font-bold text-[1.5rem]">Cost</span>
+            <span className="font-bold text-[1.5rem] mx-4">{40}</span>
+            <Image
+                alt="Eat Coin Logo"
+                src={EatCoin}
+                width="30"
+                height="30"
+              ></Image>
+          </div>
+          <span className="font-bold text-lg mt-4 text-center">Cleaning will make your Shiny 100%</span>
+          <div className="w-full flex flex-row justify-between items-center px-2 mt-6">
+            <Button
+              width="w-[46%]"
+              height="h-[3rem]"
+              bg="bg-none"
+              title="CANCEL"
+              action={() => {
+                setCleanModal(false);
+              }}
+            ></Button>
+            <Button
+              width="w-[46%]"
+              height="h-[3rem]"
+              bg={`${currShiny < 100 ? "bg-disabled" : "bg-mainBg/90"}`}
+              title="CONFIRM"
+              action={() => {}}
+              disabled={currShiny > 100}
+            ></Button>
+          </div>
+        </div>
+      </ReactModal>
+      {/* Modal for Payment Cleaning */}
+
+
       <Navbar setNavStatus={setNavStatus}></Navbar>
       {navStatus.home ? (
         <div className="w-full px-6 mt-[12vh] mb-[10vh] flex flex-col justify-center items-center">
@@ -1091,6 +1141,7 @@ const HomePage = () => {
                   progress={apiPointsData.shiny}
                   // progress="w-[100%]"
                   title2={apiPointsData.shiny}
+                  action={()=>{setCleanModal(true)}}
                 ></ProgressButton>
               </div>
               <NftAtrributes apiPointsData={apiPointsData}></NftAtrributes>

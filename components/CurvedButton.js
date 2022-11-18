@@ -14,7 +14,7 @@ const CurvedButton = ({
 }) => {
   return (
     <div
-      className={`${width} ${height} ${bg} flex flex-col justify-center items-center rounded-2xl border-r-[5px] border-b-[5px] shadow-[5px_5px_0px_#0A4957] ring-inset`}
+      className={`${width} ${height} ${bg} flex flex-col justify-center items-center rounded-2xl border-r-[5px] border-b-[5px] shadow-[5px_5px_0px_#0A4957] ring-inset cursor-pointer`}
       onClick={action}
     >
       <span className={`font-bold ${textSize}`}>{title}</span>

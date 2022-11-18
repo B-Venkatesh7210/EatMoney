@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body{
+  padding: 0;
+}
+
 .main {
   /* background: radial-gradient(122.98% 122.98% at 50% 50%, #0C0606 0%, #0C0606 0.01%, #005889 100%); */
   background: #121f21;
@@ -59,3 +63,38 @@
   top: 0;
   left: 0;
 }
+
+.eatMoneyCenter{
+  transform: rotateZ(0deg);
+  animation: rotateEatMoneyCenterZ 15s ease-in-out infinite;
+}
+
+/* .eatMoneyCenterY{
+  transform: rotateY(0deg); 
+  animation: rotateEatMoneyCenterY 10s ease-in-out infinite;
+} */
+
+@keyframes rotateEatMoneyCenterZ {
+  from {
+    transform: rotateZ(0deg);
+  }
+  to {
+    transform: rotateZ(360deg);
+  }
+}
+
+/* @keyframes rotateEatMoneyCenterY {
+  0% {
+    transform: rotateY(0deg);
+  }
+  25% {
+    transform: rotateY(30deg);
+  }
+  50%{
+    transform: rotateY(0deg);
+  }
+  75%{
+    transform: rotateY(-30deg);
+  }
+} */
+

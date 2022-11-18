@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 
-const ProgressButton = ({ width, height, title, max, progress, title2 }) => {
+const ProgressButton = ({ width, height, title, max, progress, title2, action }) => {
 
   const [progressW, setProgressW] = useState()
 
@@ -15,7 +15,7 @@ const ProgressButton = ({ width, height, title, max, progress, title2 }) => {
 
   return (
     <div className={`${width} ${height} flex flex-col justify-start items-center`}>
-      <div className="w-[8rem] h-20 bg-bg2 border-t-[5px] border-r-[5px] rounded-[0.5rem_0.5rem_0_0] flex flex-row justify-center items-center shadow-[5px_-3px_0px_#0A4957]">
+      <div className="w-[8rem] h-20 bg-bg2 border-t-[5px] border-r-[5px] rounded-[0.5rem_0.5rem_0_0] flex flex-row justify-center items-center shadow-[5px_-3px_0px_#0A4957]" onClick={action}>
         <span className="font-bold text-lg mr-2">{title}</span>
         <span className="font-medium text-base ml-2">{title2}%</span>
       </div>
