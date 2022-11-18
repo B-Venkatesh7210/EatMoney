@@ -54,19 +54,6 @@ export const config = {
     {
       inputs: [
         {
-          internalType: "uint256",
-          name: "reqIndex",
-          type: "uint256",
-        },
-      ],
-      name: "_mintEatPlate",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
           internalType: "uint64",
           name: "subscriptionId",
           type: "uint64",
@@ -127,6 +114,291 @@ export const config = {
       type: "event",
     },
     {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: true,
+          internalType: "uint256",
+          name: "plateId",
+          type: "uint256",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "restaurantId",
+          type: "uint256",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "amount",
+          type: "uint256",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "eatCoinsMinted",
+          type: "uint256",
+        },
+      ],
+      name: "EatFinished",
+      type: "event",
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "plateId",
+          type: "uint256",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "efficency",
+          type: "uint256",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "fortune",
+          type: "uint256",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "durability",
+          type: "uint256",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "level",
+          type: "uint256",
+        },
+      ],
+      name: "LevelUp",
+      type: "event",
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: true,
+          internalType: "address",
+          name: "previousOwner",
+          type: "address",
+        },
+        {
+          indexed: true,
+          internalType: "address",
+          name: "newOwner",
+          type: "address",
+        },
+      ],
+      name: "OwnershipTransferred",
+      type: "event",
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: true,
+          internalType: "uint256",
+          name: "plateId",
+          type: "uint256",
+        },
+        {
+          indexed: true,
+          internalType: "uint256",
+          name: "spinId",
+          type: "uint256",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "eatCoinsWon",
+          type: "uint256",
+        },
+      ],
+      name: "SpinFinished",
+      type: "event",
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: true,
+          internalType: "address",
+          name: "operator",
+          type: "address",
+        },
+        {
+          indexed: true,
+          internalType: "address",
+          name: "from",
+          type: "address",
+        },
+        {
+          indexed: true,
+          internalType: "address",
+          name: "to",
+          type: "address",
+        },
+        {
+          indexed: false,
+          internalType: "uint256[]",
+          name: "ids",
+          type: "uint256[]",
+        },
+        {
+          indexed: false,
+          internalType: "uint256[]",
+          name: "values",
+          type: "uint256[]",
+        },
+      ],
+      name: "TransferBatch",
+      type: "event",
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: true,
+          internalType: "address",
+          name: "operator",
+          type: "address",
+        },
+        {
+          indexed: true,
+          internalType: "address",
+          name: "from",
+          type: "address",
+        },
+        {
+          indexed: true,
+          internalType: "address",
+          name: "to",
+          type: "address",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "id",
+          type: "uint256",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "value",
+          type: "uint256",
+        },
+      ],
+      name: "TransferSingle",
+      type: "event",
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: false,
+          internalType: "string",
+          name: "value",
+          type: "string",
+        },
+        {
+          indexed: true,
+          internalType: "uint256",
+          name: "id",
+          type: "uint256",
+        },
+      ],
+      name: "URI",
+      type: "event",
+    },
+    {
+      inputs: [
+        {
+          internalType: "uint256",
+          name: "reqIndex",
+          type: "uint256",
+        },
+      ],
+      name: "_mintEatPlate",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "",
+          type: "address",
+        },
+      ],
+      name: "addressToRestaurantId",
+      outputs: [
+        {
+          internalType: "uint256",
+          name: "",
+          type: "uint256",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "account",
+          type: "address",
+        },
+        {
+          internalType: "uint256",
+          name: "id",
+          type: "uint256",
+        },
+      ],
+      name: "balanceOf",
+      outputs: [
+        {
+          internalType: "uint256",
+          name: "",
+          type: "uint256",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address[]",
+          name: "accounts",
+          type: "address[]",
+        },
+        {
+          internalType: "uint256[]",
+          name: "ids",
+          type: "uint256[]",
+        },
+      ],
+      name: "balanceOfBatch",
+      outputs: [
+        {
+          internalType: "uint256[]",
+          name: "",
+          type: "uint256[]",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
       inputs: [
         {
           internalType: "address",
@@ -183,6 +455,25 @@ export const config = {
       name: "buyPlate",
       outputs: [],
       stateMutability: "payable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "uint256",
+          name: "",
+          type: "uint256",
+        },
+      ],
+      name: "chailinkRequestsTypes",
+      outputs: [
+        {
+          internalType: "enum EatMoney.ChainlinkRequestType",
+          name: "",
+          type: "uint8",
+        },
+      ],
+      stateMutability: "view",
       type: "function",
     },
     {
@@ -270,651 +561,6 @@ export const config = {
       name: "eat",
       outputs: [],
       stateMutability: "payable",
-      type: "function",
-    },
-    {
-      anonymous: false,
-      inputs: [
-        {
-          indexed: false,
-          internalType: "uint256",
-          name: "plateId",
-          type: "uint256",
-        },
-        {
-          indexed: false,
-          internalType: "uint256",
-          name: "restaurantId",
-          type: "uint256",
-        },
-        {
-          indexed: false,
-          internalType: "uint256",
-          name: "amount",
-          type: "uint256",
-        },
-        {
-          indexed: false,
-          internalType: "uint256",
-          name: "eatCoinsMinted",
-          type: "uint256",
-        },
-      ],
-      name: "EatFinished",
-      type: "event",
-    },
-    {
-      inputs: [
-        {
-          internalType: "uint256",
-          name: "efficency",
-          type: "uint256",
-        },
-        {
-          internalType: "uint256",
-          name: "fortune",
-          type: "uint256",
-        },
-        {
-          internalType: "uint256",
-          name: "durability",
-          type: "uint256",
-        },
-        {
-          internalType: "uint256",
-          name: "plateId",
-          type: "uint256",
-        },
-      ],
-      name: "levelUp",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      anonymous: false,
-      inputs: [
-        {
-          indexed: false,
-          internalType: "uint256",
-          name: "plateId",
-          type: "uint256",
-        },
-        {
-          indexed: false,
-          internalType: "uint256",
-          name: "efficency",
-          type: "uint256",
-        },
-        {
-          indexed: false,
-          internalType: "uint256",
-          name: "fortune",
-          type: "uint256",
-        },
-        {
-          indexed: false,
-          internalType: "uint256",
-          name: "durability",
-          type: "uint256",
-        },
-        {
-          indexed: false,
-          internalType: "uint256",
-          name: "level",
-          type: "uint256",
-        },
-      ],
-      name: "LevelUp",
-      type: "event",
-    },
-    {
-      inputs: [
-        {
-          internalType: "uint256",
-          name: "plateId",
-          type: "uint256",
-        },
-        {
-          internalType: "uint256",
-          name: "price",
-          type: "uint256",
-        },
-      ],
-      name: "listPlate",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "uint32",
-          name: "amount",
-          type: "uint32",
-        },
-        {
-          internalType: "uint8",
-          name: "category",
-          type: "uint8",
-        },
-      ],
-      name: "mint",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "address",
-          name: "to",
-          type: "address",
-        },
-        {
-          internalType: "uint256[]",
-          name: "ids",
-          type: "uint256[]",
-        },
-        {
-          internalType: "uint256[]",
-          name: "amounts",
-          type: "uint256[]",
-        },
-        {
-          internalType: "bytes",
-          name: "data",
-          type: "bytes",
-        },
-      ],
-      name: "mintBatch",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "address",
-          name: "account",
-          type: "address",
-        },
-        {
-          internalType: "uint256",
-          name: "amount",
-          type: "uint256",
-        },
-      ],
-      name: "mintEatCoins",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "address",
-          name: "",
-          type: "address",
-        },
-        {
-          internalType: "address",
-          name: "",
-          type: "address",
-        },
-        {
-          internalType: "uint256[]",
-          name: "",
-          type: "uint256[]",
-        },
-        {
-          internalType: "uint256[]",
-          name: "",
-          type: "uint256[]",
-        },
-        {
-          internalType: "bytes",
-          name: "",
-          type: "bytes",
-        },
-      ],
-      name: "onERC1155BatchReceived",
-      outputs: [
-        {
-          internalType: "bytes4",
-          name: "",
-          type: "bytes4",
-        },
-      ],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "address",
-          name: "",
-          type: "address",
-        },
-        {
-          internalType: "address",
-          name: "",
-          type: "address",
-        },
-        {
-          internalType: "uint256",
-          name: "",
-          type: "uint256",
-        },
-        {
-          internalType: "uint256",
-          name: "",
-          type: "uint256",
-        },
-        {
-          internalType: "bytes",
-          name: "",
-          type: "bytes",
-        },
-      ],
-      name: "onERC1155Received",
-      outputs: [
-        {
-          internalType: "bytes4",
-          name: "",
-          type: "bytes4",
-        },
-      ],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      anonymous: false,
-      inputs: [
-        {
-          indexed: true,
-          internalType: "address",
-          name: "previousOwner",
-          type: "address",
-        },
-        {
-          indexed: true,
-          internalType: "address",
-          name: "newOwner",
-          type: "address",
-        },
-      ],
-      name: "OwnershipTransferred",
-      type: "event",
-    },
-    {
-      inputs: [
-        {
-          internalType: "uint256",
-          name: "requestId",
-          type: "uint256",
-        },
-        {
-          internalType: "uint256[]",
-          name: "randomWords",
-          type: "uint256[]",
-        },
-      ],
-      name: "rawFulfillRandomWords",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "string",
-          name: "restaurantInfo",
-          type: "string",
-        },
-        {
-          internalType: "address",
-          name: "restaurantAddress",
-          type: "address",
-        },
-      ],
-      name: "registerRestaurant",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [],
-      name: "renounceOwnership",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "address",
-          name: "from",
-          type: "address",
-        },
-        {
-          internalType: "address",
-          name: "to",
-          type: "address",
-        },
-        {
-          internalType: "uint256[]",
-          name: "ids",
-          type: "uint256[]",
-        },
-        {
-          internalType: "uint256[]",
-          name: "amounts",
-          type: "uint256[]",
-        },
-        {
-          internalType: "bytes",
-          name: "data",
-          type: "bytes",
-        },
-      ],
-      name: "safeBatchTransferFrom",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "address",
-          name: "from",
-          type: "address",
-        },
-        {
-          internalType: "address",
-          name: "to",
-          type: "address",
-        },
-        {
-          internalType: "uint256",
-          name: "id",
-          type: "uint256",
-        },
-        {
-          internalType: "uint256",
-          name: "amount",
-          type: "uint256",
-        },
-        {
-          internalType: "bytes",
-          name: "data",
-          type: "bytes",
-        },
-      ],
-      name: "safeTransferFrom",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "address",
-          name: "operator",
-          type: "address",
-        },
-        {
-          internalType: "bool",
-          name: "approved",
-          type: "bool",
-        },
-      ],
-      name: "setApprovalForAll",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "string",
-          name: "newuri",
-          type: "string",
-        },
-      ],
-      name: "setURI",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      anonymous: false,
-      inputs: [
-        {
-          indexed: false,
-          internalType: "uint256",
-          name: "plateId",
-          type: "uint256",
-        },
-        {
-          indexed: false,
-          internalType: "uint256",
-          name: "spinId",
-          type: "uint256",
-        },
-        {
-          indexed: false,
-          internalType: "uint256",
-          name: "eatCoinsWon",
-          type: "uint256",
-        },
-      ],
-      name: "SpinFinished",
-      type: "event",
-    },
-    {
-      inputs: [
-        {
-          internalType: "uint256",
-          name: "plateId",
-          type: "uint256",
-        },
-      ],
-      name: "spinWheel",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      anonymous: false,
-      inputs: [
-        {
-          indexed: true,
-          internalType: "address",
-          name: "operator",
-          type: "address",
-        },
-        {
-          indexed: true,
-          internalType: "address",
-          name: "from",
-          type: "address",
-        },
-        {
-          indexed: true,
-          internalType: "address",
-          name: "to",
-          type: "address",
-        },
-        {
-          indexed: false,
-          internalType: "uint256[]",
-          name: "ids",
-          type: "uint256[]",
-        },
-        {
-          indexed: false,
-          internalType: "uint256[]",
-          name: "values",
-          type: "uint256[]",
-        },
-      ],
-      name: "TransferBatch",
-      type: "event",
-    },
-    {
-      inputs: [
-        {
-          internalType: "address",
-          name: "newOwner",
-          type: "address",
-        },
-      ],
-      name: "transferOwnership",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      anonymous: false,
-      inputs: [
-        {
-          indexed: true,
-          internalType: "address",
-          name: "operator",
-          type: "address",
-        },
-        {
-          indexed: true,
-          internalType: "address",
-          name: "from",
-          type: "address",
-        },
-        {
-          indexed: true,
-          internalType: "address",
-          name: "to",
-          type: "address",
-        },
-        {
-          indexed: false,
-          internalType: "uint256",
-          name: "id",
-          type: "uint256",
-        },
-        {
-          indexed: false,
-          internalType: "uint256",
-          name: "value",
-          type: "uint256",
-        },
-      ],
-      name: "TransferSingle",
-      type: "event",
-    },
-    {
-      anonymous: false,
-      inputs: [
-        {
-          indexed: false,
-          internalType: "string",
-          name: "value",
-          type: "string",
-        },
-        {
-          indexed: true,
-          internalType: "uint256",
-          name: "id",
-          type: "uint256",
-        },
-      ],
-      name: "URI",
-      type: "event",
-    },
-    {
-      inputs: [
-        {
-          internalType: "address",
-          name: "",
-          type: "address",
-        },
-      ],
-      name: "addressToRestaurantId",
-      outputs: [
-        {
-          internalType: "uint256",
-          name: "",
-          type: "uint256",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "address",
-          name: "account",
-          type: "address",
-        },
-        {
-          internalType: "uint256",
-          name: "id",
-          type: "uint256",
-        },
-      ],
-      name: "balanceOf",
-      outputs: [
-        {
-          internalType: "uint256",
-          name: "",
-          type: "uint256",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "address[]",
-          name: "accounts",
-          type: "address[]",
-        },
-        {
-          internalType: "uint256[]",
-          name: "ids",
-          type: "uint256[]",
-        },
-      ],
-      name: "balanceOfBatch",
-      outputs: [
-        {
-          internalType: "uint256[]",
-          name: "",
-          type: "uint256[]",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "uint256",
-          name: "",
-          type: "uint256",
-        },
-      ],
-      name: "chailinkRequestsTypes",
-      outputs: [
-        {
-          internalType: "enum EatMoney.ChainlinkRequestType",
-          name: "",
-          type: "uint8",
-        },
-      ],
-      stateMutability: "view",
       type: "function",
     },
     {
@@ -1227,6 +873,116 @@ export const config = {
       inputs: [
         {
           internalType: "uint256",
+          name: "efficency",
+          type: "uint256",
+        },
+        {
+          internalType: "uint256",
+          name: "fortune",
+          type: "uint256",
+        },
+        {
+          internalType: "uint256",
+          name: "durability",
+          type: "uint256",
+        },
+        {
+          internalType: "uint256",
+          name: "plateId",
+          type: "uint256",
+        },
+      ],
+      name: "levelUp",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "uint256",
+          name: "plateId",
+          type: "uint256",
+        },
+        {
+          internalType: "uint256",
+          name: "price",
+          type: "uint256",
+        },
+      ],
+      name: "listPlate",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "uint32",
+          name: "amount",
+          type: "uint32",
+        },
+        {
+          internalType: "uint8",
+          name: "category",
+          type: "uint8",
+        },
+      ],
+      name: "mint",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "to",
+          type: "address",
+        },
+        {
+          internalType: "uint256[]",
+          name: "ids",
+          type: "uint256[]",
+        },
+        {
+          internalType: "uint256[]",
+          name: "amounts",
+          type: "uint256[]",
+        },
+        {
+          internalType: "bytes",
+          name: "data",
+          type: "bytes",
+        },
+      ],
+      name: "mintBatch",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "account",
+          type: "address",
+        },
+        {
+          internalType: "uint256",
+          name: "amount",
+          type: "uint256",
+        },
+      ],
+      name: "mintEatCoins",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "uint256",
           name: "",
           type: "uint256",
         },
@@ -1248,6 +1004,84 @@ export const config = {
       type: "function",
     },
     {
+      inputs: [
+        {
+          internalType: "address",
+          name: "",
+          type: "address",
+        },
+        {
+          internalType: "address",
+          name: "",
+          type: "address",
+        },
+        {
+          internalType: "uint256[]",
+          name: "",
+          type: "uint256[]",
+        },
+        {
+          internalType: "uint256[]",
+          name: "",
+          type: "uint256[]",
+        },
+        {
+          internalType: "bytes",
+          name: "",
+          type: "bytes",
+        },
+      ],
+      name: "onERC1155BatchReceived",
+      outputs: [
+        {
+          internalType: "bytes4",
+          name: "",
+          type: "bytes4",
+        },
+      ],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "",
+          type: "address",
+        },
+        {
+          internalType: "address",
+          name: "",
+          type: "address",
+        },
+        {
+          internalType: "uint256",
+          name: "",
+          type: "uint256",
+        },
+        {
+          internalType: "uint256",
+          name: "",
+          type: "uint256",
+        },
+        {
+          internalType: "bytes",
+          name: "",
+          type: "bytes",
+        },
+      ],
+      name: "onERC1155Received",
+      outputs: [
+        {
+          internalType: "bytes4",
+          name: "",
+          type: "bytes4",
+        },
+      ],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
       inputs: [],
       name: "owner",
       outputs: [
@@ -1264,19 +1098,43 @@ export const config = {
       inputs: [
         {
           internalType: "uint256",
-          name: "",
+          name: "requestId",
           type: "uint256",
         },
-      ],
-      name: "reqIdTocategory",
-      outputs: [
         {
-          internalType: "uint8",
-          name: "",
-          type: "uint8",
+          internalType: "uint256[]",
+          name: "randomWords",
+          type: "uint256[]",
         },
       ],
-      stateMutability: "view",
+      name: "rawFulfillRandomWords",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "string",
+          name: "restaurantInfo",
+          type: "string",
+        },
+        {
+          internalType: "address",
+          name: "restaurantAddress",
+          type: "address",
+        },
+      ],
+      name: "registerRestaurant",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [],
+      name: "renounceOwnership",
+      outputs: [],
+      stateMutability: "nonpayable",
       type: "function",
     },
     {
@@ -1355,6 +1213,135 @@ export const config = {
     {
       inputs: [
         {
+          internalType: "uint256",
+          name: "",
+          type: "uint256",
+        },
+      ],
+      name: "reqIdTocategory",
+      outputs: [
+        {
+          internalType: "uint8",
+          name: "",
+          type: "uint8",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "from",
+          type: "address",
+        },
+        {
+          internalType: "address",
+          name: "to",
+          type: "address",
+        },
+        {
+          internalType: "uint256[]",
+          name: "ids",
+          type: "uint256[]",
+        },
+        {
+          internalType: "uint256[]",
+          name: "amounts",
+          type: "uint256[]",
+        },
+        {
+          internalType: "bytes",
+          name: "data",
+          type: "bytes",
+        },
+      ],
+      name: "safeBatchTransferFrom",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "from",
+          type: "address",
+        },
+        {
+          internalType: "address",
+          name: "to",
+          type: "address",
+        },
+        {
+          internalType: "uint256",
+          name: "id",
+          type: "uint256",
+        },
+        {
+          internalType: "uint256",
+          name: "amount",
+          type: "uint256",
+        },
+        {
+          internalType: "bytes",
+          name: "data",
+          type: "bytes",
+        },
+      ],
+      name: "safeTransferFrom",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "operator",
+          type: "address",
+        },
+        {
+          internalType: "bool",
+          name: "approved",
+          type: "bool",
+        },
+      ],
+      name: "setApprovalForAll",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "string",
+          name: "newuri",
+          type: "string",
+        },
+      ],
+      name: "setURI",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "uint256",
+          name: "plateId",
+          type: "uint256",
+        },
+      ],
+      name: "spinWheel",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
           internalType: "bytes4",
           name: "interfaceId",
           type: "bytes4",
@@ -1369,6 +1356,19 @@ export const config = {
         },
       ],
       stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "newOwner",
+          type: "address",
+        },
+      ],
+      name: "transferOwnership",
+      outputs: [],
+      stateMutability: "nonpayable",
       type: "function",
     },
     {

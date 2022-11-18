@@ -12,7 +12,7 @@ import qrCode from "../assets/images/qrCode.jpg";
 import Matic from "../assets/logos/Polygon Matic.png";
 import Nft from "../assets/images/Sample NFT.svg";
 import { useAccount, useSigner, useContract, useProvider } from "wagmi";
-import { ethers } from "ethers";
+import { ethers, utils } from "ethers";
 import { config } from "../config/config";
 import { BigNumber } from "ethers";
 import { generateNonce } from "../utils/utils";
@@ -90,13 +90,20 @@ const Restaurant = () => {
       const message = `${BigNumber.from(restaurant.id).toString()}_${
         restaurant.name
       }_${receiptData.totalCharge}_${receiptData.receiptDetails}`;
-      const hash = ethers.utils.keccak256(
-        ethers.utils.toUtf8Bytes(message + nonce)
+
+      const hash = ethers.utils.solidityKeccak256(
+        ["string", "uint256"],
+        [message, BigNumber.from(nonce)]
       );
-      const sig = await signer.signMessage(hash);
+
+      let messageHashBinary = ethers.utils.arrayify(hash);
+
+      //abi.encodePacked
+
+      const sig = await signer.signMessage(messageHashBinary);
 
       const receipt = JSON.stringify({
-        id: restaurant.id,
+        id: restaurant.id.toNumber(),
         name: restaurant.name,
         amountInUsd: receiptData.totalCharge,
         description: receiptData.receiptDetails,

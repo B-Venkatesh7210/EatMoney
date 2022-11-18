@@ -20,6 +20,7 @@ import { BigNumber, ethers } from "ethers";
 import { config } from "../config/config";
 import { getCategory, getImage } from "../utils/utils";
 import { toast } from "react-toastify";
+import QrReader from "react-qr-scanner";
 
 const HomePage = () => {
   const progress = 80;
@@ -29,19 +30,8 @@ const HomePage = () => {
     history: false,
   });
   const [isScanning, setIsScanning] = useState(false);
-  const [qrData, setQrData] = useState("");
-  const { ref } = useZxing({
-    onResult(result) {
-      console.log(result.getText());
-      setQrData(result.getText());
-      setIsScanning(false);
-      const qrJson = JSON.parse(qrData);
-      setRestaurantData(qrJson);
-      setPaymentConfirmModal(true);
-    },
-  });
-
-  const [restaurantData, setRestaurantData] = useState({});
+  const [qrData, setQrData] = useState({});
+  //const [restaurantData, setRestaurantData] = useState({});
   const [levelUpModal, setLevelUpModal] = useState(false);
   const [addPointsModal, setAddPointsModal] = useState(false);
   const [sellNftModal, setSellNftModal] = useState(false);
@@ -68,16 +58,17 @@ const HomePage = () => {
   const [totalPoints, setTotalPoints] = useState(10);
   const [apiTotalPoints, setApiTotalPoints] = useState(10);
   const [balance, setBalance] = useState(0);
-  const [currShiny, setCurrShiny] = useState(100);
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState({});
   const [chooseCategory, setChooseCategory] = useState("Emerald");
   const [chooseLevel, setChooseLevel] = useState(1);
   const [hasNft, sethasNft] = useState(false);
   const router = useRouter();
 
   const [plates, setPlates] = useState([]);
+  const [history, setHistory] = useState([]);
   const { isConnected, address } = useAccount();
-  const { data: signer, isError, isLoading } = useSigner();
+  const { data: signer, isError } = useSigner();
   const provider = useProvider();
   const contract = new ethers.Contract(
     config.contractAddress,
@@ -97,8 +88,43 @@ const HomePage = () => {
       });
       await getMarketItems();
     } catch (e) {
-      toast.error("Balance low or you already have the plate");
+      toast.error(e.error.data.message.replaceAll("execution reverted: ", ""));
     }
+  };
+
+  //get all EatFinished events from contract
+  const getHistory = async () => {
+    const filters = contract.filters.EatFinished(apiPointsData.id);
+    contract.queryFilter(filters).then((events) => {
+      //put events data in history array
+
+      const list = events.map(async (event) => {
+        console.log(event.args);
+        const restaurant = await contract.idToRestaurant(event.args[1]);
+        const data = await (
+          await fetch(
+            "https://" +
+              restaurant.info.replace("ipfs://", "") +
+              ".ipfs.nftstorage.link"
+          )
+        ).json();
+        return {
+          restaurantId: event.args[1],
+          restaurantName: data.name,
+          restaurantAddress: data.address,
+          restaurantImage: data.image,
+          amount: (BigNumber.from(event.args[2]).toNumber() / 10 ** 6).toFixed(
+            2
+          ),
+          eatCoinsMinted: (
+            BigNumber.from(event.args[3]).toNumber() /
+            10 ** 8
+          ).toFixed(2),
+        };
+      });
+      const history = Promise.all(list);
+      setHistory(history);
+    });
   };
 
   const getMarketItems = async () => {
@@ -172,28 +198,110 @@ const HomePage = () => {
       });
       await getMyPlate();
     } catch (e) {
-      toast.error("Something went wrong");
+      toast.error(e.error.data.message.replaceAll("execution reverted: ", ""));
     }
   };
 
   const eat = async () => {
     try {
+      console.log(
+        apiPointsData.id,
+        qrData.id,
+        qrData.signature,
+        qrData.nonce,
+        qrData.message
+      );
       const tx = await contract.eat(
         apiPointsData.id,
         qrData.id,
-        qrData.sig,
+        qrData.signature,
         qrData.nonce,
         qrData.message,
-        BigNumber.from(qrData.amountInUsd).mul(10 ** 6)
+        BigNumber.from(parseFloat(qrData.amountInUsd) * 10 ** 6)
       );
+
+      //1085fe8c0826061159c156984748f0f8b2118e110fb20f1b859dbc2a29005f0e
+
+      /*       event EatFinished(
+        uint256 plateId,
+        uint256 restaurantId,
+        uint256 amount,
+        uint256 eatCoinsMinted
+    ); */
       await toast.promise(tx.wait(), {
         pending: "Eating on Plate 🍽️...",
         success: "Eating Successful 👌",
         error: "Bad eating",
       });
-      await getMyPlate();
+
+      const filter = {
+        address: config.contractAddress,
+        topics: [
+          utils.id("EatFinished(uint256,uint256,uint256,uint256)"),
+          utils.hexZeroPad(utils.hexlify(apiPointsData.id), 32),
+        ],
+      };
+
+      contract.once(
+        filter,
+        async (plateId, restaurantId, amount, eatCoinsMinted) => {
+          toast.success(
+            `You got ${(
+              BigNumber.from(eatCoinsMinted).toNumber() /
+              10 ** 8
+            ).toFixed(2)} Eatcoins from eating 👌`
+          );
+          setPaymentSuccessModal(true);
+          await getMyPlate();
+          setPaymentSuccess({
+            plateId: plateId.toNumber(),
+            restaurantId: restaurantId.toNumber(),
+            amount: (BigNumber.from(amount).toNumber() / 10 ** 6).toFixed(2),
+            eatCoinsMinted: (
+              BigNumber.from(eatCoinsMinted).toNumber() /
+              10 ** 8
+            ).toFixed(2),
+          });
+        }
+      );
     } catch (e) {
-      toast.error("Something went wrong");
+      toast.error(e.error.data.message.replaceAll("execution reverted: ", ""));
+    }
+  };
+
+  const spinWheel = async () => {
+    try {
+      const tx = await contract.spinWheel(apiPointsData.id);
+
+      await toast.promise(tx.wait(), {
+        pending: "Spinning Wheel 🎡...",
+        success: "Waiting for chainlink...",
+        error: "Bad eating",
+      });
+
+      const filter = {
+        address: config.contractAddress,
+        topics: [
+          utils.id("SpinFinished(uint256,uint256,uint256)"),
+          utils.hexZeroPad(utils.hexlify(apiPointsData.id), 32),
+        ],
+      };
+
+      contract.once(
+        filter,
+        async (plateId, restaurantId, amount, eatCoinsMinted) => {
+          toast.success(
+            `You got ${(
+              BigNumber.from(eatCoinsMinted).toNumber() /
+              10 ** 8
+            ).toFixed(2)} Eatcoins from spinning 👌`
+          );
+          //todo setSpinwheel modal to false
+          await getMyPlate();
+        }
+      );
+    } catch (e) {
+      toast.error(e.error.data.message.replaceAll("execution reverted: ", ""));
     }
   };
 
@@ -259,11 +367,15 @@ const HomePage = () => {
   useEffect(() => {
     if (signer) {
       getMyPlate();
+
       contract.balanceOf(address, 0).then((balance) => {
         setBalance(balance.div(10 ** 8).toNumber());
       });
+
       getMarketItems();
+      getHistory();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signer]);
 
   const increment = (value) => {
@@ -319,13 +431,32 @@ const HomePage = () => {
       }
     } else return;
   };
-
   return isScanning ? (
-    <video
-      ref={ref}
-      style={{ width: "100%", maxWidth: "400px", border: "1px solid black" }}
-      muted
-    />
+    <div className="main bg-mainBg flex flex-col justify-start">
+      {/* {isLoading && <p className="text-white text-xl3">Loading........</p>} */}
+      <QrReader
+        className="video"
+        onError={() => {
+          toast.info("Something went wrong");
+          setIsScanning(false);
+        }}
+        onLoad={() => {
+          if (!isLoading) {
+            toast.success("Scan the reciept QR code");
+            setIsLoading(true);
+          }
+        }}
+        onScan={(data) => {
+          if (data != null) {
+            console.log(data);
+            setIsScanning(false);
+            const qrJson = JSON.parse(data.text);
+            setQrData(qrJson);
+            setPaymentConfirmModal(true);
+          }
+        }}
+      />
+    </div>
   ) : (
     <div className="main flex flex-col justify-start items-center bg-mainBg overflow-hidden">
       {/* Modal for Level Up */}
@@ -874,7 +1005,7 @@ const HomePage = () => {
           <div className="w-[70%] flex flex-row justify-between items-center mt-6">
             <span className="font-bold text-[2rem] flex flex-row justify-center items-center">
               <span className="ml-2">$</span>{" "}
-              <span className="ml-3">{400}</span>
+              <span className="ml-3">{paymentSuccess.amount}</span>
             </span>
             <span className="font-bold text-[2rem] flex flex-row justify-center items-center">
               <Image
@@ -883,7 +1014,7 @@ const HomePage = () => {
                 width="30"
                 height="30"
               ></Image>
-              <span className="ml-2">{30}</span>
+              <span className="ml-2">{paymentSuccess.eatCoinsMinted}</span>
             </span>
           </div>
           <span className="font-bold text-xl mt-4">You Got</span>
@@ -1049,9 +1180,9 @@ const HomePage = () => {
             {/* <span className="text-text1 text-xl font-semibold italic mt-10">You do not have history</span> */}
             {/* If History is Empty */}
             <div className="w-full h-full flex flex-col justify-start items-center mt-8">
-              {historyDetails.map((historyDetail) => (
+              {history.map((historyDetail) => (
                 <HistoryDetails
-                  key={historyDetail.details}
+                  key={historyDetail.restaurantId}
                   historyDetail={historyDetail}
                 ></HistoryDetails>
               ))}

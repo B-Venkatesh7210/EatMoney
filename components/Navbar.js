@@ -14,7 +14,7 @@ const Navbar = ({ setNavStatus }) => {
   const contract = new ethers.Contract(
     config.contractAddress,
     config.abi,
-    signer
+    provider
   );
   const [balance, setBalance] = useState(BigNumber.from(0));
 
