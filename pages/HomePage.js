@@ -13,11 +13,13 @@ import ReactModal from "react-modal";
 import Button from "../components/Button";
 import Matic from "../assets/logos/Polygon Matic.png";
 import NftPlateMP from "../components/NftPlateMP";
-import Emerald4 from "../assets/images/Emerald Plate Level 4.svg";
-import Bronze3 from "../assets/images/Bronze Plate Level 3.svg";
-import Silver2 from "../assets/images/Silver Plate Level 2.svg";
-import Gold1 from "../assets/images/Gold Plate Level 1.svg";
+
 import HistoryDetails from "../components/HistoryDetails";
+import { useAccount, useSigner, useContract, useProvider } from "wagmi";
+import { BigNumber, ethers } from "ethers";
+import { config } from "../config/config";
+import { getCategory, getImage } from "../utils/utils";
+import { toast } from "react-toastify";
 
 const HomePage = () => {
   const progress = 80;
@@ -57,321 +59,61 @@ const HomePage = () => {
   const [hasNft, sethasNft] = useState(false);
   const router = useRouter();
 
-  const nftPlates = [
-    {
-      tokenId: 1,
-      img: Emerald4,
-      category: "Emerald",
-      level: 4,
-      price: 10,
-      attributesMax: 100,
-      attributes: 30,
-      fortuneMax: 100,
-      fortune: 40,
-      durabilityMax: 100,
-      durability: 50,
-    },
-    {
-      tokenId: 2,
-      img: Bronze3,
-      category: "Bronze",
-      level: 3,
-      price: 10,
-      attributesMax: 100,
-      attributes: 20,
-      fortuneMax: 100,
-      fortune: 80,
-      durabilityMax: 100,
-      durability: 10,
-    },
-    {
-      tokenId: 3,
-      img: Silver2,
-      category: "Silver",
-      level: 2,
-      price: 10,
-      attributesMax: 100,
-      attributes: 70,
-      fortuneMax: 100,
-      fortune: 45,
-      durabilityMax: 100,
-      durability: 15,
-    },
-    {
-      tokenId: 4,
-      img: Gold1,
-      category: "Gold",
-      level: 1,
-      price: 10,
-      attributesMax: 100,
-      attributes: 30,
-      fortuneMax: 100,
-      fortune: 40,
-      durabilityMax: 100,
-      durability: 50,
-    },
-    {
-      tokenId: 5,
-      img: Emerald4,
-      category: "Emerald",
-      level: 4,
-      price: 10,
-      attributesMax: 100,
-      attributes: 20,
-      fortuneMax: 100,
-      fortune: 25,
-      durabilityMax: 100,
-      durability: 10,
-    },
-    {
-      tokenId: 6,
-      img: Gold1,
-      category: "Gold",
-      level: 1,
-      price: 10,
-      attributesMax: 100,
-      attributes: 90,
-      fortuneMax: 100,
-      fortune: 55,
-      durabilityMax: 100,
-      durability: 80,
-    },
-    {
-      tokenId: 7,
-      img: Bronze3,
-      category: "Bronze",
-      level: 3,
-      price: 10,
-      attributesMax: 100,
-      attributes: 60,
-      fortuneMax: 100,
-      fortune: 20,
-      durabilityMax: 100,
-      durability: 55,
-    },
-    {
-      tokenId: 8,
-      img: Emerald4,
-      category: "Emerald",
-      level: 4,
-      price: 10,
-      attributesMax: 100,
-      attributes: 30,
-      fortuneMax: 100,
-      fortune: 40,
-      durabilityMax: 100,
-      durability: 50,
-    },
-    {
-      tokenId: 9,
-      img: Bronze3,
-      category: "Bronze",
-      level: 3,
-      price: 10,
-      attributesMax: 100,
-      attributes: 20,
-      fortuneMax: 100,
-      fortune: 80,
-      durabilityMax: 100,
-      durability: 10,
-    },
-    {
-      tokenId: 10,
-      img: Silver2,
-      category: "Silver",
-      level: 2,
-      price: 10,
-      attributesMax: 100,
-      attributes: 70,
-      fortuneMax: 100,
-      fortune: 45,
-      durabilityMax: 100,
-      durability: 15,
-    },
-    {
-      tokenId: 11,
-      img: Gold1,
-      category: "Gold",
-      level: 1,
-      price: 10,
-      attributesMax: 100,
-      attributes: 30,
-      fortuneMax: 100,
-      fortune: 40,
-      durabilityMax: 100,
-      durability: 50,
-    },
-    {
-      tokenId: 12,
-      img: Emerald4,
-      category: "Emerald",
-      level: 4,
-      price: 10,
-      attributesMax: 100,
-      attributes: 20,
-      fortuneMax: 100,
-      fortune: 25,
-      durabilityMax: 100,
-      durability: 10,
-    },
-    {
-      tokenId: 13,
-      img: Gold1,
-      category: "Gold",
-      level: 1,
-      price: 10,
-      attributesMax: 100,
-      attributes: 90,
-      fortuneMax: 100,
-      fortune: 55,
-      durabilityMax: 100,
-      durability: 80,
-    },
-    {
-      tokenId: 14,
-      img: Bronze3,
-      category: "Bronze",
-      level: 3,
-      price: 10,
-      attributesMax: 100,
-      attributes: 60,
-      fortuneMax: 100,
-      fortune: 20,
-      durabilityMax: 100,
-      durability: 55,
-    },
-    {
-      tokenId: 15,
-      img: Emerald4,
-      category: "Emerald",
-      level: 4,
-      price: 10,
-      attributesMax: 100,
-      attributes: 30,
-      fortuneMax: 100,
-      fortune: 40,
-      durabilityMax: 100,
-      durability: 50,
-    },
-    {
-      tokenId: 16,
-      img: Bronze3,
-      category: "Bronze",
-      level: 3,
-      price: 10,
-      attributesMax: 100,
-      attributes: 20,
-      fortuneMax: 100,
-      fortune: 80,
-      durabilityMax: 100,
-      durability: 10,
-    },
-    {
-      tokenId: 17,
-      img: Silver2,
-      category: "Silver",
-      level: 2,
-      price: 10,
-      attributesMax: 100,
-      attributes: 70,
-      fortuneMax: 100,
-      fortune: 45,
-      durabilityMax: 100,
-      durability: 15,
-    },
-    {
-      tokenId: 18,
-      img: Gold1,
-      category: "Gold",
-      level: 1,
-      price: 10,
-      attributesMax: 100,
-      attributes: 30,
-      fortuneMax: 100,
-      fortune: 40,
-      durabilityMax: 100,
-      durability: 50,
-    },
-    {
-      tokenId: 19,
-      img: Emerald4,
-      category: "Emerald",
-      level: 4,
-      price: 10,
-      attributesMax: 100,
-      attributes: 20,
-      fortuneMax: 100,
-      fortune: 25,
-      durabilityMax: 100,
-      durability: 10,
-    },
-    {
-      tokenId: 20,
-      img: Gold1,
-      category: "Gold",
-      level: 1,
-      price: 10,
-      attributesMax: 100,
-      attributes: 90,
-      fortuneMax: 100,
-      fortune: 55,
-      durabilityMax: 100,
-      durability: 80,
-    },
-    {
-      tokenId: 21,
-      img: Bronze3,
-      category: "Bronze",
-      level: 3,
-      price: 10,
-      attributesMax: 100,
-      attributes: 60,
-      fortuneMax: 100,
-      fortune: 20,
-      durabilityMax: 100,
-      durability: 55,
-    },
-    {
-      tokenId: 22,
-      img: Emerald4,
-      category: "Emerald",
-      level: 4,
-      price: 10,
-      attributesMax: 100,
-      attributes: 30,
-      fortuneMax: 100,
-      fortune: 40,
-      durabilityMax: 100,
-      durability: 50,
-    },
-  ];
+  const [plates, setPlates] = useState([]);
+  const { isConnected, address } = useAccount();
+  const { data: signer, isError, isLoading } = useSigner();
+  const provider = useProvider();
+  const contract = new ethers.Contract(
+    config.contractAddress,
+    config.abi,
+    signer
+  );
 
-  const historyDetails = [
-    {
-      restaurantName: "Gulati Restaurant",
-      maticCoins: 20,
-      eatCoins: 10,
-      details: "2 x Bhature",
-    },
-    {
-      restaurantName: "Gulati Restaurant",
-      maticCoins: 20,
-      eatCoins: 10,
-      details: "2 x Bhature",
-    },
-    {
-      restaurantName: "Gulati Restaurant",
-      maticCoins: 20,
-      eatCoins: 10,
-      details: "2 x Bhature",
-    },
-    {
-      restaurantName: "Gulati Restaurant",
-      maticCoins: 20,
-      eatCoins: 10,
-      details: "2 x Bhature",
-    },
-  ];
+  const buyPlate = async (plate) => {
+    try {
+      const tx = await contract.buyPlate(plate.id, {
+        value: ethers.utils.parseEther(plate.price.toString()),
+      });
+      await tx.wait();
+      await getMarketItems();
+      toast("Plate bought successfully");
+    } catch (e) {
+      toast.error("Balance low or you already have the plate");
+    }
+  };
+
+  const getMarketItems = async () => {
+    const marketItems = await contract.getMarketplaceItems();
+    const items = marketItems.map(async (item) => {
+      const price = ethers.utils.formatUnits(item.price.toString(), "ether");
+      //console.log(item);
+      const plate = await contract.idToEatPlate(item.tokenId);
+      const image = getImage(plate.category, plate.level);
+      const category = getCategory(plate.category);
+
+      return {
+        id: item.id.toNumber(),
+        price: price,
+        owner: item.owner,
+        tokenId: item.tokenId.toNumber(),
+        level: plate.level,
+        category: category,
+        durability: plate.durablity.toNumber(),
+        efficiency: plate.efficiency.toNumber(),
+        fortune: plate.fortune.toNumber(),
+        img: image,
+        active: item.active,
+        //img, max
+      };
+    });
+    const finalItems = await Promise.all(items);
+    const filteredPlates = finalItems.filter((item) => item.active == true);
+    setPlates(filteredPlates);
+  };
+
+  useEffect(() => {
+    if (signer) getMarketItems();
+  }, [signer]);
 
   const increment = (value) => {
     if (totalPoints > 0) {
@@ -943,16 +685,15 @@ const HomePage = () => {
           </div>
           <span className="font-bold text-xl mt-4">You Got</span>
           <span className="font-bold text-[2rem] flex flex-row justify-center items-center mt-4">
-          <span>{30}</span>
-              <Image
-                alt="Matic Logo"
-                src={EatCoin}
-                width="30"
-                height="30"
-                className="ml-2"
-              ></Image>
-             
-            </span>
+            <span>{30}</span>
+            <Image
+              alt="Matic Logo"
+              src={EatCoin}
+              width="30"
+              height="30"
+              className="ml-2"
+            ></Image>
+          </span>
           <div className="w-full flex flex-row justify-between items-center px-2 mt-6">
             <Button
               width="w-[46%]"
@@ -1079,11 +820,14 @@ const HomePage = () => {
             ></CurvedButton>
           </div>
           <div className="w-full h-auto grid grid-cols-2 gap-4 mt-8 overflow-scroll px-2">
-            {nftPlates.map((nftPlate) => (
+            {plates.map((nftPlate) => (
               <div
                 key={nftPlate}
+                onClick={async () => {
+                  await buyPlate(nftPlate);
+                }}
                 className={`${
-                  nftPlates[nftPlates.length - 1].tokenId == nftPlate.tokenId &&
+                  plates[plates.length - 1].tokenId == nftPlate.tokenId &&
                   "mb-[15rem]"
                 }`}
               >

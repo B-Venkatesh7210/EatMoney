@@ -3,7 +3,8 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const { chains, provider } = configureChains(
   [chain.polygonMumbai],
   [publicProvider()]
@@ -25,6 +26,7 @@ function MyApp({ Component, pageProps }) {
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains} modalSize="compact">
         <Component {...pageProps} />
+        <ToastContainer />
       </RainbowKitProvider>
     </WagmiConfig>
   );
