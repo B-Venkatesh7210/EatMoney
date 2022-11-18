@@ -79,9 +79,12 @@ const HomePage = () => {
       const tx = await contract.buyPlate(plate.id, {
         value: ethers.utils.parseEther(plate.price.toString()),
       });
-      await tx.wait();
+      await toast.promise(tx.wait(), {
+        pending: "Buying Plate",
+        success: "Plate Bought Successfully 👌",
+        error: "Error Buying Plate",
+      });
       await getMarketItems();
-      toast("Plate bought successfully");
     } catch (e) {
       toast.error("Balance low or you already have the plate");
     }
@@ -156,9 +159,49 @@ const HomePage = () => {
         durability,
         apiPointsData.id
       );
-      await tx.wait();
-      toast.success("Plate leveled up successfully");
+      await toast.promise(tx.wait(), {
+        pending: "Leveling Up",
+        success: "Level Up Successful",
+        error: "Error Leveling Up",
+      });
       await getMyPlate();
+    } catch (e) {
+      toast.error("Something went wrong");
+    }
+  };
+
+  const sellNft = async () => {
+    try {
+      const approved = await contract.isApprovedForAll(
+        address,
+        config.contractAddress
+      );
+      if (!approved) {
+        const tx = await contract.setApprovalForAll(
+          config.contractAddress,
+          true
+        );
+
+        await toast.promise(tx.wait(), {
+          pending: "Approving...",
+          success: "Approval successful 👌",
+          error: "Approval rejected 🤯",
+        });
+      }
+
+      const tx = await contract.listPlate(
+        apiPointsData.id,
+        ethers.utils.parseEther(sellingPrice.toString())
+      );
+
+      await toast.promise(tx.wait(), {
+        pending: "Listing Plate...",
+        success: "Plate listing successful 👌",
+        error: "Listing rejected 🤯",
+      });
+
+      await getMyPlate();
+      await getMarketItems();
     } catch (e) {
       toast.error("Something went wrong");
     }
@@ -482,7 +525,12 @@ const HomePage = () => {
         <div className="h-auto w-[90%] bg-bg2/80 rounded-[2rem] border-[3px] mx-6 mt-[20%] flex flex-col justify-start items-center p-4 z-[20]">
           <span className="font-bold text-3xl">Sell NFT </span>
           <div className="mx-6 mt-4">
-            <Image alt="sample nft" src={Nft} width="200" height="200"></Image>
+            <Image
+              alt="sample nft"
+              src={apiPointsData.img}
+              width="200"
+              height="200"
+            ></Image>
           </div>
           <div className="w-[70%] flex flex-row justify-around items-center mt-4">
             <span className="font-semibold text-2xl italic">
@@ -493,7 +541,7 @@ const HomePage = () => {
             </span>
           </div>
           <div className="w-[95%] h-[14vh] flex flex-col justify-start items-center pt-2 mb-3">
-            {apiPointsData.shinny < 100 ? (
+            {apiPointsData.shiny < 100 ? (
               <span className="font-bold text-xl text-center mt-4">
                 Your Shiny should be 100% to list your NFT for sale
               </span>
@@ -542,7 +590,10 @@ const HomePage = () => {
               height="h-[3rem]"
               bg={`${currShiny < 100 ? "bg-disabled" : "bg-mainBg/90"}`}
               title="CONFIRM"
-              action={() => {}}
+              action={async () => {
+                setSellNftModal(false);
+                await sellNft();
+              }}
               disabled={currShiny > 100}
             ></Button>
           </div>
@@ -947,6 +998,7 @@ const HomePage = () => {
         setLevelUpModal={setLevelUpModal}
         setNavStatus={setNavStatus}
         setSellNftModal={setSellNftModal}
+        setEatModal={setPaymentConfirmModal}
       ></Footer>
     </div>
   );
