@@ -11,13 +11,13 @@ import EatMoneyCenter from "../assets/images/EatMoneyCenter.png";
 import Knife from "../assets/images/Knife.png";
 import EatMoneyText from "../assets/images/EatMoneyText.png";
 import CurvedButton from "../components/CurvedButton";
-import Bronze4 from "../assets/images/Bronze Plate Level 4.png";
-import Silver4 from "../assets/images/Silver Plate Level 4.png";
-import Gold4 from "../assets/images/Gold Plate Level 4.png";
-import Emerald4 from "../assets/images/Emerald Plate Level 4.png";
-import Emerald3 from "../assets/images/Emerald Plate Level 3.png";
-import Emerald2 from "../assets/images/Emerald Plate Level 2.png";
-import Emerald1 from "../assets/images/Emerald Plate Level 1.png";
+import Bronze4 from "../assets/images/b4.png";
+import Silver4 from "../assets/images/s4.png";
+import Gold4 from "../assets/images/g4.png";
+import Emerald4 from "../assets/images/e4.png";
+import Emerald3 from "../assets/images/e3.png";
+import Emerald2 from "../assets/images/e2.png";
+import Emerald1 from "../assets/images/e1.png";
 
 const LandingPage = () => {
   const router = useRouter();
