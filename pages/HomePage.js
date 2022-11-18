@@ -53,12 +53,9 @@ const HomePage = () => {
   });
   const [totalPoints, setTotalPoints] = useState(10);
   const [apiTotalPoints, setApiTotalPoints] = useState(10);
-  const [currLevel, setCurrLevel] = useState(3);
-  const [levelUpCost, setLevelUpCost] = useState(20);
   const [balance, setBalance] = useState(0);
   const [currShiny, setCurrShiny] = useState(100);
 
-  const [category, setCategory] = useState("Emerald");
   const [chooseCategory, setChooseCategory] = useState("Emerald");
   const [chooseLevel, setChooseLevel] = useState(1);
   const [hasNft, sethasNft] = useState(false);
@@ -343,7 +340,11 @@ const HomePage = () => {
                   </span>
                 </div>
                 {/* If Current Balance is lower than Cost */}
-                {levelUpCost > balance && (
+                {(apiPointsData.level == 1
+                  ? 100
+                  : apiPointsData.level == 2
+                  ? 180
+                  : 350) > balance && (
                   <span className="font-medium text-base italic text-center">
                     Current Balance is lower than Level Up cost
                   </span>
@@ -376,11 +377,11 @@ const HomePage = () => {
               width="w-[46%]"
               height="h-[3rem]"
               bg={`${
-                apiPointsData.level == 1
+                (apiPointsData.level == 1
                   ? 100
                   : apiPointsData.level == 2
                   ? 180
-                  : 350 > balance || apiPointsData.level == 4
+                  : 350) > balance || apiPointsData.level == 4
                   ? "bg-disabled"
                   : "bg-mainBg/90"
               }`}
@@ -390,11 +391,11 @@ const HomePage = () => {
                 setLevelUpModal(false);
               }}
               disabled={
-                apiPointsData.level == 1
+                (apiPointsData.level == 1
                   ? 100
                   : apiPointsData.level == 2
                   ? 180
-                  : 350 > balance || apiPointsData.level == 4
+                  : 350) > balance || apiPointsData.level == 4
               }
             ></Button>
           </div>
