@@ -65,6 +65,7 @@ const HomePage = () => {
   const [chooseCategory, setChooseCategory] = useState("Emerald");
   const [chooseLevel, setChooseLevel] = useState(1);
   const [hasNft, sethasNft] = useState(false);
+  const [price, setPrice] = useState(0);
   const router = useRouter();
 
   const [plates, setPlates] = useState([]);
@@ -222,7 +223,9 @@ const HomePage = () => {
         qrData.message,
         BigNumber.from(parseFloat(qrData.amountInUsd) * 10 ** 6),
         {
-          value: ethers.utils.parseEther(qrData.amountInUsd),
+          value: ethers.utils.parseEther(
+            (parseFloat(qrData.amountInUsd) * parseFloat(price)).toString()
+          ),
         }
       );
 
@@ -239,12 +242,13 @@ const HomePage = () => {
         success: "Eating Successful 👌",
         error: "Bad eating",
       });
-
+      setPaymentConfirmModal(false);
+      setPaymentSuccessModal(true);
       const filter = {
         address: config.contractAddress,
         topics: [
-          utils.id("EatFinished(uint256,uint256,uint256,uint256)"),
-          utils.hexZeroPad(utils.hexlify(apiPointsData.id), 32),
+          ethers.utils.id("EatFinished(uint256,uint256,uint256,uint256)"),
+          ethers.utils.hexZeroPad(ethers.utils.hexlify(apiPointsData.id), 32),
         ],
       };
 
@@ -271,6 +275,7 @@ const HomePage = () => {
         }
       );
     } catch (e) {
+      console.log(e);
       toast.error(e.error.data.message.replaceAll("execution reverted: ", ""));
     }
   };
@@ -288,8 +293,8 @@ const HomePage = () => {
       const filter = {
         address: config.contractAddress,
         topics: [
-          utils.id("SpinFinished(uint256,uint256,uint256)"),
-          utils.hexZeroPad(utils.hexlify(apiPointsData.id), 32),
+          ethers.utils.id("SpinFinished(uint256,uint256,uint256)"),
+          ethers.utils.hexZeroPad(ethers.utils.hexlify(apiPointsData.id), 32),
         ],
       };
 
@@ -373,7 +378,15 @@ const HomePage = () => {
   useEffect(() => {
     if (signer) {
       getMyPlate();
-
+      const priceFeed = new ethers.Contract(
+        config.priceFeedAddress,
+        config.chainlinkPriceFeedAbi,
+        signer
+      );
+      priceFeed.latestRoundData().then((roundData) => {
+        setPrice(BigNumber.from(roundData.answer).toNumber() / 10 ** 8);
+        console.log("Latest Round Data", roundData.answer.toString());
+      });
       contract.balanceOf(address, 0).then((balance) => {
         setBalance(balance.div(10 ** 8).toNumber());
       });
@@ -437,6 +450,18 @@ const HomePage = () => {
       }
     } else return;
   };
+  // moccking chainlink vrf calculation with random radonm number for UI
+  const calculateEarnings = (data) => {
+    const shinyFactor = 1;
+
+    const randFactor = (500 % 3) + 3;
+    const eatCoins =
+      (apiPointsData.efficiency * parseFloat(data.amountInUsd) * 10 ** 10) /
+      (randFactor * shinyFactor);
+
+    return (eatCoins / 10 ** 8).toFixed(3);
+  };
+
   return isScanning ? (
     <div className="main bg-mainBg flex flex-col justify-start">
       {/* {isLoading && <p className="text-white text-xl3">Loading........</p>} */}
@@ -457,6 +482,8 @@ const HomePage = () => {
             console.log(data);
             setIsScanning(false);
             const qrJson = JSON.parse(data.text);
+            qrJson.earning = calculateEarnings(qrJson);
+            console.log(qrJson);
             setQrData(qrJson);
             setPaymentConfirmModal(true);
           }
@@ -944,7 +971,11 @@ const HomePage = () => {
                     width="30"
                     height="30"
                   ></Image>
-                  <span className="ml-2">{30}</span>
+                  <span className="ml-2">
+                    {(
+                      parseFloat(qrData.amountInUsd) * parseFloat(price)
+                    ).toFixed(3)}
+                  </span>
                   {
                     // todo : change the amount of matic from price
                   }
@@ -962,7 +993,7 @@ const HomePage = () => {
                     height="30"
                   ></Image>
                   {/* <span className="mx-2">+</span> */}
-                  <span className="ml-2">+{8}</span>{" "}
+                  <span className="ml-2">+{qrData.earning}</span>{" "}
                   {
                     //todo add good approximation
                   }
