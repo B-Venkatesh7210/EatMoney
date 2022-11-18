@@ -55,6 +55,7 @@ const HomePage = () => {
     category: "",
     level: 0,
     img: "",
+    shinyCost: 0,
   });
   const [totalPoints, setTotalPoints] = useState(10);
   const [apiTotalPoints, setApiTotalPoints] = useState(10);
@@ -166,7 +167,7 @@ const HomePage = () => {
       const image = getImage(plate.category, plate.level);
       const category = getCategory(plate.category);
       const costPerShiny = (plate.level * 12) / plate.durablity.toNumber() ** 2;
-      const shinyCost = (100 - plate.durablity.toNumber()) * costPerShiny;
+      const shinyCost = (100 - plate.shiny.toNumber()) * costPerShiny;
       console.log(shinyCost);
       setApiPointsData({
         id: plate.id.toNumber(),
@@ -191,6 +192,7 @@ const HomePage = () => {
 
   const clean = async () => {
     try {
+      setCleanModal(false);
       const tx = await contract.clean(apiPointsData.id);
       await toast.promise(tx.wait(), {
         pending: "Cleaning Plate 🧼",
@@ -1070,15 +1072,19 @@ const HomePage = () => {
           <span className="font-bold text-3xl">Clean Plate</span>
           <div className="w-[70%] flex flex-row justify-center items-center mt-6">
             <span className="font-bold text-[1.5rem]">Cost</span>
-            <span className="font-bold text-[1.5rem] mx-4">{40}</span>
+            <span className="font-bold text-[1.5rem] mx-4">
+              {apiPointsData.shinyCost}
+            </span>
             <Image
-                alt="Eat Coin Logo"
-                src={EatCoin}
-                width="30"
-                height="30"
-              ></Image>
+              alt="Eat Coin Logo"
+              src={EatCoin}
+              width="30"
+              height="30"
+            ></Image>
           </div>
-          <span className="font-bold text-lg mt-4 text-center">Cleaning will make your Shiny 100%</span>
+          <span className="font-bold text-lg mt-4 text-center">
+            Cleaning will make your Shiny 100%
+          </span>
           <div className="w-full flex flex-row justify-between items-center px-2 mt-6">
             <Button
               width="w-[46%]"
@@ -1092,16 +1098,19 @@ const HomePage = () => {
             <Button
               width="w-[46%]"
               height="h-[3rem]"
-              bg={`${currShiny < 100 ? "bg-disabled" : "bg-mainBg/90"}`}
+              bg={`${
+                apiPointsData.shiny == 100 ? "bg-disabled" : "bg-mainBg/90"
+              }`}
               title="CONFIRM"
-              action={() => {}}
-              disabled={currShiny > 100}
+              action={async () => {
+                await clean();
+              }}
+              disabled={apiPointsData.shiny == 100}
             ></Button>
           </div>
         </div>
       </ReactModal>
       {/* Modal for Payment Cleaning */}
-
 
       <Navbar setNavStatus={setNavStatus}></Navbar>
       {navStatus.home ? (
@@ -1141,7 +1150,9 @@ const HomePage = () => {
                   progress={apiPointsData.shiny}
                   // progress="w-[100%]"
                   title2={apiPointsData.shiny}
-                  action={()=>{setCleanModal(true)}}
+                  action={() => {
+                    setCleanModal(true);
+                  }}
                 ></ProgressButton>
               </div>
               <NftAtrributes apiPointsData={apiPointsData}></NftAtrributes>
