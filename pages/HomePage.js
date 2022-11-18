@@ -220,7 +220,10 @@ const HomePage = () => {
         qrData.signature,
         qrData.nonce,
         qrData.message,
-        BigNumber.from(parseFloat(qrData.amountInUsd) * 10 ** 6)
+        BigNumber.from(parseFloat(qrData.amountInUsd) * 10 ** 6),
+        {
+          value: ethers.utils.parseEther(qrData.amountInUsd),
+        }
       );
 
       //1085fe8c0826061159c156984748f0f8b2118e110fb20f1b859dbc2a29005f0e
@@ -1082,9 +1085,16 @@ const HomePage = () => {
               height="30"
             ></Image>
           </div>
-          <span className="font-bold text-lg mt-4 text-center">
-            Cleaning will make your Shiny 100%
-          </span>
+          {apiPointsData.shiny == 100 ? (
+            <span className="font-bold text-lg mt-4 text-center">
+              {"You can't clean, you already have 100% shiny."}
+            </span>
+          ) : (
+            <span className="font-bold text-lg mt-4 text-center">
+              Cleaning will make your Shiny 100%
+            </span>
+          )}
+
           <div className="w-full flex flex-row justify-between items-center px-2 mt-6">
             <Button
               width="w-[46%]"
@@ -1239,7 +1249,12 @@ const HomePage = () => {
           <div className="w-[90%] h-[75%] flex flex-col justify-start items-center">
             <span className="text-text1 text-2xl font-bold">History</span>
             {/* If History is Empty */}
-            {/* <span className="text-text1 text-xl font-semibold italic mt-10">You do not have history</span> */}
+            {history.length == 0 && (
+              <span className="text-text1 text-xl font-semibold italic mt-10">
+                You do not have history
+              </span>
+            )}
+
             {/* If History is Empty */}
             <div className="w-full h-full flex flex-col justify-start items-center mt-8">
               {history.map((historyDetail) => (

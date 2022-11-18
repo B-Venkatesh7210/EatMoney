@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import Matic from "../assets/logos/Polygon Matic.png";
+import EatCoin from "../assets/logos/EAT COIN.png";
 
 const CurvedButton = ({
   width,
@@ -21,7 +21,7 @@ const CurvedButton = ({
       {subtitle && (
         <span className={`font-medium text-sm flex flex-row justify-center items-center`}>
           {subtitleText}{" "}
-          <Image alt="Matic Logo" src={Matic} width="20" height="20" className="ml-2"></Image>
+          <Image alt="Eat Coin Logo" src={EatCoin} width="20" height="20" className="ml-2"></Image>
         </span>
       )}
     </div>

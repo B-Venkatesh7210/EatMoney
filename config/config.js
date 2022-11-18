@@ -1,5 +1,5 @@
 export const config = {
-  contractAddress: "0x3C838D1898b9395457B4AdAD981c7a9CD7ED520B",
+  contractAddress: "0xf430E674A49bb1f7F48F65961984F8fCD9DC11bb",
   chainlinkPriceFeedAbi: [
     {
       inputs: [],

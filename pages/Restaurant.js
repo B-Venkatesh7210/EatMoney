@@ -249,7 +249,7 @@ const Restaurant = () => {
             {(
               price
                 .mul(
-                  BigNumber.from(parseFloat(receiptData.totalCharge) * 10 ** 6)
+                  BigNumber.from(parseFloat(receiptData.totalCharge == ""? 0 : receiptData.totalCharge) * 10 ** 6)
                 )
                 .div(10 ** 6)
                 .toNumber() /
@@ -298,7 +298,7 @@ const Restaurant = () => {
               textSize="text-xl"
               title="Withdraw Stake"
               subtitle={true}
-              subtitleText={`Staked Amount: ${"40"}`}
+              subtitleText={`Staked Amount: ${"2000"}`}
               action={() => withdrawStake()}
             ></CurvedButton>
           </div>
