@@ -42,6 +42,7 @@ const HomePage = () => {
     durability: 0,
   });
   const [apiPointsData, setApiPointsData] = useState({
+    id: 0,
     efficiency: 0,
     fortune: 0,
     durability: 0,
@@ -54,7 +55,7 @@ const HomePage = () => {
   const [apiTotalPoints, setApiTotalPoints] = useState(10);
   const [currLevel, setCurrLevel] = useState(3);
   const [levelUpCost, setLevelUpCost] = useState(20);
-  const [balance, setBalance] = useState(500);
+  const [balance, setBalance] = useState(0);
   const [currShiny, setCurrShiny] = useState(100);
 
   const [category, setCategory] = useState("Emerald");
@@ -125,6 +126,7 @@ const HomePage = () => {
       const category = getCategory(plate.category);
 
       setApiPointsData({
+        id: plate.id.toNumber(),
         level: plate.level,
         category: category,
         durability: plate.durablity.toNumber(),
@@ -143,9 +145,31 @@ const HomePage = () => {
     }
   };
 
+  const levelUp = async () => {
+    try {
+      const efficency = pointsData.efficiency - apiPointsData.efficiency;
+      const durability = pointsData.durability - apiPointsData.durability;
+      const fortune = pointsData.fortune - apiPointsData.fortune;
+      const tx = await contract.levelUp(
+        efficency,
+        fortune,
+        durability,
+        apiPointsData.id
+      );
+      await tx.wait();
+      toast.success("Plate leveled up successfully");
+      await getMyPlate();
+    } catch (e) {
+      toast.error("Something went wrong");
+    }
+  };
+
   useEffect(() => {
     if (signer) {
       getMyPlate();
+      contract.balanceOf(address, 0).then((balance) => {
+        setBalance(balance.div(10 ** 8).toNumber());
+      });
       getMarketItems();
     }
   }, [signer]);
@@ -230,19 +254,28 @@ const HomePage = () => {
             ></Image>
           </span>
           <div className="mx-6 mt-4">
-            <Image alt="sample nft" src={Nft} width="150" height="150"></Image>
+            <Image
+              alt="sample nft"
+              src={apiPointsData.img}
+              width="150"
+              height="150"
+            ></Image>
           </div>
           <span className="font-semibold text-2xl italic mt-4">
-            Level {currLevel}
+            Level {apiPointsData.level} to {apiPointsData.level + 1}
           </span>
           <div className="h-auto w-full flex flex-col justify-start">
-            {currLevel != 4 ? (
+            {apiPointsData.level != 4 ? (
               <div className="flex flex-col justify-center items-center w-full">
                 <div className="w-full flex flex-row justify-between items-baseline mb-4 mt-4 px-4">
                   <span className="font-semibold text-xl italic  flex flex-row items-end">
                     Cost:{" "}
-                    <span className="font-semibold text-3xl not-italic ml-2">
-                      {levelUpCost}
+                    <span className="font-semibold text-xl not-italic ml-2">
+                      {apiPointsData.level == 1
+                        ? 100
+                        : apiPointsData.level == 2
+                        ? 180
+                        : 350}
                     </span>
                     <Image
                       alt="Eat Coin"
@@ -254,7 +287,7 @@ const HomePage = () => {
                   </span>
                   <span className="font-semibold text-xl italic  flex flex-row items-end">
                     Bal:{" "}
-                    <span className="font-semibold text-3xl not-italic ml-2">
+                    <span className="font-semibold text-xl not-italic ml-2">
                       {balance}
                     </span>
                     <Image
@@ -300,7 +333,11 @@ const HomePage = () => {
               width="w-[46%]"
               height="h-[3rem]"
               bg={`${
-                levelUpCost > balance || currLevel == 4
+                apiPointsData.level == 1
+                  ? 100
+                  : apiPointsData.level == 2
+                  ? 180
+                  : 350 > balance || apiPointsData.level == 4
                   ? "bg-disabled"
                   : "bg-mainBg/90"
               }`}
@@ -309,7 +346,13 @@ const HomePage = () => {
                 setAddPointsModal(true);
                 setLevelUpModal(false);
               }}
-              disabled={levelUpCost > balance || currLevel == 4}
+              disabled={
+                apiPointsData.level == 1
+                  ? 100
+                  : apiPointsData.level == 2
+                  ? 180
+                  : 350 > balance || apiPointsData.level == 4
+              }
             ></Button>
           </div>
         </div>
@@ -414,6 +457,10 @@ const HomePage = () => {
               height="h-[3rem]"
               bg="bg-mainBg/90"
               title="CONFIRM"
+              action={async () => {
+                setAddPointsModal(false);
+                await levelUp();
+              }}
             ></Button>
           </div>
         </div>
