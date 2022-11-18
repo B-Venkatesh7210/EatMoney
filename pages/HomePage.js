@@ -37,14 +37,18 @@ const HomePage = () => {
   const [paymentSuccessModal, setPaymentSuccessModal] = useState(false);
   const [sellingPrice, setSellingPrice] = useState();
   const [pointsData, setPointsData] = useState({
-    efficiency: 10,
-    fortune: 12,
-    durability: 8,
+    efficiency: 0,
+    fortune: 0,
+    durability: 0,
   });
   const [apiPointsData, setApiPointsData] = useState({
-    efficiency: 10,
-    fortune: 12,
-    durability: 8,
+    efficiency: 0,
+    fortune: 0,
+    durability: 0,
+    shiny: 0,
+    category: "",
+    level: 0,
+    img: "",
   });
   const [totalPoints, setTotalPoints] = useState(10);
   const [apiTotalPoints, setApiTotalPoints] = useState(10);
@@ -111,8 +115,39 @@ const HomePage = () => {
     setPlates(filteredPlates);
   };
 
+  const getMyPlate = async () => {
+    const plate = await contract.getPlatesOfOwner(address);
+
+    if (BigNumber.from(plate.id).eq(BigNumber.from(0))) {
+      sethasNft(false);
+    } else {
+      const image = getImage(plate.category, plate.level);
+      const category = getCategory(plate.category);
+
+      setApiPointsData({
+        level: plate.level,
+        category: category,
+        durability: plate.durablity.toNumber(),
+        efficiency: plate.efficiency.toNumber(),
+        fortune: plate.fortune.toNumber(),
+        img: image,
+        shiny: plate.shiny.toNumber(),
+        //img, max
+      });
+      setPointsData({
+        durability: plate.durablity.toNumber(),
+        efficiency: plate.efficiency.toNumber(),
+        fortune: plate.fortune.toNumber(),
+      });
+      sethasNft(true);
+    }
+  };
+
   useEffect(() => {
-    if (signer) getMarketItems();
+    if (signer) {
+      getMyPlate();
+      getMarketItems();
+    }
   }, [signer]);
 
   const increment = (value) => {
@@ -403,13 +438,15 @@ const HomePage = () => {
             <Image alt="sample nft" src={Nft} width="200" height="200"></Image>
           </div>
           <div className="w-[70%] flex flex-row justify-around items-center mt-4">
-            <span className="font-semibold text-2xl italic">Emerald</span>
             <span className="font-semibold text-2xl italic">
-              Level {currLevel}
+              {apiPointsData.category}
+            </span>
+            <span className="font-semibold text-2xl italic">
+              Level {apiPointsData.level}
             </span>
           </div>
           <div className="w-[95%] h-[14vh] flex flex-col justify-start items-center pt-2 mb-3">
-            {currShiny < 100 ? (
+            {apiPointsData.shinny < 100 ? (
               <span className="font-bold text-xl text-center mt-4">
                 Your Shiny should be 100% to list your NFT for sale
               </span>
@@ -707,10 +744,12 @@ const HomePage = () => {
             <Button
               width="w-[46%]"
               height="h-[3rem]"
-              bg={`${currShiny < 100 ? "bg-disabled" : "bg-mainBg/90"}`}
+              bg={`${
+                apiPointsData.shinny < 100 ? "bg-disabled" : "bg-mainBg/90"
+              }`}
               title="CONFIRM"
               action={() => {}}
-              disabled={currShiny > 100}
+              disabled={apiPointsData.shinny > 100}
             ></Button>
           </div>
         </div>
@@ -720,12 +759,12 @@ const HomePage = () => {
       <Navbar setNavStatus={setNavStatus}></Navbar>
       {navStatus.home ? (
         <div className="w-full px-6 mt-[12vh] mb-[10vh] flex flex-col justify-center items-center">
-          {!hasNft ? (
+          {hasNft ? (
             <>
               <div className="mx-6">
                 <Image
                   alt="sample nft"
-                  src={Nft}
+                  src={apiPointsData.img}
                   width="200"
                   height="200"
                 ></Image>
@@ -736,14 +775,14 @@ const HomePage = () => {
                   height="h-[3rem]"
                   bg="bg-bg2"
                   textSize="text-xl"
-                  title="Emerald"
+                  title={apiPointsData.category}
                 ></CurvedButton>
                 <CurvedButton
                   width="w-[8rem]"
                   height="h-[3rem]"
                   bg="bg-bg2"
                   textSize="text-xl"
-                  title={`Level ${currLevel}`}
+                  title={`Level ${apiPointsData.level}`}
                 ></CurvedButton>
               </div>
               <div className="w-full flex flex-row justify-center items-center mt-10">
@@ -752,12 +791,12 @@ const HomePage = () => {
                   height="h-[5rem]"
                   title="Shiny"
                   max={100}
-                  progress={progress}
+                  progress={apiPointsData.shiny}
                   // progress="w-[100%]"
-                  title2={progress}
+                  title2={apiPointsData.shiny}
                 ></ProgressButton>
               </div>
-              <NftAtrributes></NftAtrributes>
+              <NftAtrributes apiPointsData={apiPointsData}></NftAtrributes>
             </>
           ) : (
             <div className="w-full h-[50vh] mt-[12vh] flex flex-col justify-center items-center">
