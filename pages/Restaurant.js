@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Image from "next/image";
 import CurvedButton from "../components/CurvedButton";
@@ -11,22 +11,125 @@ import RestaurantDetails from "../components/RestaurantDetails";
 import qrCode from "../assets/images/qrCode.jpg";
 import Matic from "../assets/logos/Polygon Matic.png";
 import Nft from "../assets/images/Sample NFT.svg";
+import { useAccount, useSigner, useContract, useProvider } from "wagmi";
+import { ethers, utils } from "ethers";
+import { config } from "../config/config";
+import { BigNumber } from "ethers";
+import { generateNonce } from "../utils/utils";
+import QRCode from "react-qr-code";
+import { toast } from "react-toastify";
 
 const Restaurant = () => {
   const [receiptModal, setReceiptModal] = useState(false);
   const [scannerModal, setScannerModal] = useState(false);
   const [receiptData, setReceiptData] = useState({
-    totalCharge: "",
+    totalCharge: "0",
     receiptDetails: "",
   });
-  const [isRestaurant, setIsRestaurant] = useState(true);
+  const [isRestaurant, setIsRestaurant] = useState(false);
+  const [restaurant, setRestaurant] = useState({});
+  const [qr, setQr] = useState("");
+  const [price, setPrice] = useState(BigNumber.from(0));
+  const { isConnected, address } = useAccount();
+  const { data: signer, isError, isLoading } = useSigner();
+  const provider = useProvider();
+  const contract = new ethers.Contract(
+    config.contractAddress,
+    config.abi,
+    signer
+  );
+  const getRestaurantDetails = async () => {
+    const retaurant = await contract.getRestaurantDetails(address);
+    console.log(BigNumber.from(0));
+    if (!BigNumber.from(retaurant.id).eq(BigNumber.from(0))) {
+      const data = await (
+        await fetch(
+          "https://" +
+            retaurant.info.replace("ipfs://", "") +
+            ".ipfs.nftstorage.link"
+        )
+      ).json();
+      //console.log(data);
+      setRestaurant({
+        name: data.name,
+        irlAddress: data.address,
+        description: data.description,
+        image: data.image,
+        id: retaurant.id,
+        info: retaurant.info,
+        owner: retaurant.owner,
+      });
+      setIsRestaurant(true);
+      const priceFeed = new ethers.Contract(
+        config.priceFeedAddress,
+        config.chainlinkPriceFeedAbi,
+        signer
+      );
+      priceFeed.latestRoundData().then((roundData) => {
+        setPrice(BigNumber.from(roundData.answer));
+        console.log("Latest Round Data", roundData.answer.toString());
+      });
+    }
+    //console.log(retaurant);
+  };
 
-  const handleData = () => {
-    if (receiptData.totalCharge === "" && receiptData.receiptDetails === "") {
+  useEffect(() => {
+    if (isConnected && signer) {
+      getRestaurantDetails();
+    }
+  }, [signer]);
+
+  const createReceipt = async () => {
+    if (
+      (receiptData.totalCharge === "" && receiptData.receiptDetails === "") ||
+      !restaurant
+    ) {
       return;
     } else {
+      const nonce = generateNonce(10);
+      const message = `${BigNumber.from(restaurant.id).toString()}_${
+        restaurant.name
+      }_${receiptData.totalCharge}_${receiptData.receiptDetails}`;
+
+      const hash = ethers.utils.solidityKeccak256(
+        ["string", "uint256"],
+        [message, BigNumber.from(nonce)]
+      );
+
+      let messageHashBinary = ethers.utils.arrayify(hash);
+
+      //abi.encodePacked
+
+      const sig = await signer.signMessage(messageHashBinary);
+
+      const receipt = JSON.stringify({
+        id: restaurant.id.toNumber(),
+        name: restaurant.name,
+        amountInUsd: receiptData.totalCharge,
+        description: receiptData.receiptDetails,
+        message: message,
+        nonce: nonce,
+        signature: sig,
+        image: restaurant.image,
+      });
+
+      setQr(receipt);
+      toast("Receipt Created Successfully");
+      console.log(sig);
       setScannerModal(true);
       setReceiptModal(false);
+    }
+  };
+
+  const withdrawStake = async () => {
+    try {
+      console.log(address);
+      const txn = await contract.deleteRestaurant(address);
+      await txn.wait();
+      await getRestaurantDetails();
+      toast("Restaurant Deleted Successfully");
+    } catch (e) {
+      toast.error("Something Went Wrong");
     }
   };
 
@@ -105,9 +208,9 @@ const Restaurant = () => {
                 height="h-[3rem]"
                 bg="bg-bg2"
                 title="CONFIRM"
-                action={() => {
+                action={async () => {
                   console.log(receiptData);
-                  handleData();
+                  await createReceipt();
                 }}
               ></Button>
             </div>
@@ -134,15 +237,24 @@ const Restaurant = () => {
             Ask the customer to Scan the QR from EAT MONEY Website.
           </span>
           <div className="mx-6 mt-4">
-            <Image
-              alt="sample nft"
-              src={qrCode}
-              width="400"
-              height="400"
-            ></Image>
+            <QRCode
+              size={350}
+              value={qr}
+              style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+              viewBox={`0 0 350 350`}
+            />
           </div>
           <span className="flex flex-row justify-center items-center font-medium text-xl text-center italic mt-4">
-            Total Charge: $ {receiptData.totalCharge} ~ {0.00075}{" "}
+            Total Charge: $ {receiptData.totalCharge.toString()} ~{" "}
+            {(
+              price
+                .mul(
+                  BigNumber.from(parseFloat(receiptData.totalCharge) * 10 ** 6)
+                )
+                .div(10 ** 6)
+                .toNumber() /
+              10 ** 8
+            ).toFixed(3)}
             <Image
               alt="Matic Logo"
               src={Matic}
@@ -161,13 +273,14 @@ const Restaurant = () => {
           <div className="mx-6 mb-10">
             <Image
               alt="sample nft"
-              src={RestaurantPic}
+              src={restaurant.image}
+              loader={() => restaurant.image}
               width="400"
               height="400"
               className="rounded-3xl"
             ></Image>
           </div>
-          <RestaurantDetails></RestaurantDetails>
+          <RestaurantDetails restaurant={restaurant}></RestaurantDetails>
           <div className="w-full flex flex-col justify-center items-center mt-[3rem]">
             <CurvedButton
               width="w-[65%]"
@@ -186,7 +299,7 @@ const Restaurant = () => {
               title="Withdraw Stake"
               subtitle={true}
               subtitleText={`Staked Amount: ${"40"}`}
-              action={() => setReceiptModal(true)}
+              action={() => withdrawStake()}
             ></CurvedButton>
           </div>
         </div>

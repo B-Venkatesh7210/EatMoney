@@ -16,7 +16,12 @@
     "react-custom-roulette": "^1.2.0",
     "react-dom": "18.2.0",
     "react-modal": "^3.16.1",
-    "wagmi": "^0.7.15"
+    "react-qr-code": "^2.0.8",
+    "react-qr-scanner": "^1.0.0-alpha.11",
+    "react-toastify": "^9.1.1",
+    "react-zxing": "^1.0.5",
+    "wagmi": "^0.7.15",
+    "webrtc-adapter": "^8.2.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.13",

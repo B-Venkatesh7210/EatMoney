@@ -7,7 +7,12 @@ import History from "../assets/logos/History.png";
 import EatCoin from "../assets/logos/EAT COIN.png";
 import ReactModal from "react-modal";
 
-const Footer = ({ setLevelUpModal, setNavStatus, setSellNftModal }) => {
+const Footer = ({
+  setLevelUpModal,
+  setNavStatus,
+  setSellNftModal,
+  setIsScanning,
+}) => {
   return (
     <>
       <div className="fixed bottom-0 left-0 w-full h-[8vh] bg-footerBg border-t-[4px] border-text2 rounded-[20px_20px_0_0] flex flex-row justify-between items-center px-4 mt-[3rem] z-0">
@@ -40,6 +45,7 @@ const Footer = ({ setLevelUpModal, setNavStatus, setSellNftModal }) => {
           width="60"
           height="60"
           className="absolute bottom-8 z-10 left-[43%]"
+          onClick={() => setIsScanning(true)}
         ></Image>
         <div className="w-[45%] flex flex-row justify-around items-center">
           <div

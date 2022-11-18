@@ -16,15 +16,13 @@ const HistoryDetails = ({ historyDetail }) => {
       <div
         className={`w-full h-[3rem] bg-bg2 flex flex-row justify-between items-center rounded-2xl border-r-[5px] border-b-[5px] shadow-[5px_5px_0px_#0A4957] ring-inset px-4 z-10`}
       >
-        <span className="font-semibold text-base">
-          {historyDetail.restaurantName}
-        </span>
+        <span className="font-semibold text-base">{historyDetail.name}</span>
         <span className="font-bold text-base flex flex-row justify-center items-center">
-          - {historyDetail.maticCoins}{" "}
+          - {historyDetail.amount}{" "}
           <Image alt="Eat Coin" src={Matic} width="20" className="ml-2"></Image>
         </span>
         <span className="font-bold text-base flex flex-row justify-center items-center">
-          + {historyDetail.eatCoins}{" "}
+          + {historyDetail.eatCoinsMinted}{" "}
           <Image
             alt="Eat Coin"
             src={EatCoin}
@@ -40,7 +38,7 @@ const HistoryDetails = ({ historyDetail }) => {
               Receipt Details
             </span>
             <span className="font-medium text-sm text-text1 mt-2">
-              {historyDetail.details}
+              {historyDetail.description}
             </span>
           </div>
         </div>

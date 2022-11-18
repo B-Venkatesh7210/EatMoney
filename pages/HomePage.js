@@ -13,11 +13,14 @@ import ReactModal from "react-modal";
 import Button from "../components/Button";
 import Matic from "../assets/logos/Polygon Matic.png";
 import NftPlateMP from "../components/NftPlateMP";
-import Emerald4 from "../assets/images/Emerald Plate Level 4.svg";
-import Bronze3 from "../assets/images/Bronze Plate Level 3.svg";
-import Silver2 from "../assets/images/Silver Plate Level 2.svg";
-import Gold1 from "../assets/images/Gold Plate Level 1.svg";
+import { useZxing } from "react-zxing";
 import HistoryDetails from "../components/HistoryDetails";
+import { useAccount, useSigner, useContract, useProvider } from "wagmi";
+import { BigNumber, ethers } from "ethers";
+import { config } from "../config/config";
+import { getCategory, getImage } from "../utils/utils";
+import { toast } from "react-toastify";
+import QrReader from "react-qr-scanner";
 
 const HomePage = () => {
   const progress = 80;
@@ -26,6 +29,9 @@ const HomePage = () => {
     marketPlace: false,
     history: false,
   });
+  const [isScanning, setIsScanning] = useState(false);
+  const [qrData, setQrData] = useState({});
+  //const [restaurantData, setRestaurantData] = useState({});
   const [levelUpModal, setLevelUpModal] = useState(false);
   const [addPointsModal, setAddPointsModal] = useState(false);
   const [sellNftModal, setSellNftModal] = useState(false);
@@ -35,343 +41,342 @@ const HomePage = () => {
   const [paymentSuccessModal, setPaymentSuccessModal] = useState(false);
   const [sellingPrice, setSellingPrice] = useState();
   const [pointsData, setPointsData] = useState({
-    efficiency: 10,
-    fortune: 12,
-    durability: 8,
+    efficiency: 0,
+    fortune: 0,
+    durability: 0,
   });
   const [apiPointsData, setApiPointsData] = useState({
-    efficiency: 10,
-    fortune: 12,
-    durability: 8,
+    id: 0,
+    efficiency: 0,
+    fortune: 0,
+    durability: 0,
+    shiny: 0,
+    category: "",
+    level: 0,
+    img: "",
   });
   const [totalPoints, setTotalPoints] = useState(10);
   const [apiTotalPoints, setApiTotalPoints] = useState(10);
-  const [currLevel, setCurrLevel] = useState(3);
-  const [levelUpCost, setLevelUpCost] = useState(20);
-  const [balance, setBalance] = useState(500);
-  const [currShiny, setCurrShiny] = useState(100);
-
-  const [category, setCategory] = useState("Emerald");
+  const [balance, setBalance] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState({});
   const [chooseCategory, setChooseCategory] = useState("Emerald");
   const [chooseLevel, setChooseLevel] = useState(1);
   const [hasNft, sethasNft] = useState(false);
   const router = useRouter();
 
-  const nftPlates = [
-    {
-      tokenId: 1,
-      img: Emerald4,
-      category: "Emerald",
-      level: 4,
-      price: 10,
-      attributesMax: 100,
-      attributes: 30,
-      fortuneMax: 100,
-      fortune: 40,
-      durabilityMax: 100,
-      durability: 50,
-    },
-    {
-      tokenId: 2,
-      img: Bronze3,
-      category: "Bronze",
-      level: 3,
-      price: 10,
-      attributesMax: 100,
-      attributes: 20,
-      fortuneMax: 100,
-      fortune: 80,
-      durabilityMax: 100,
-      durability: 10,
-    },
-    {
-      tokenId: 3,
-      img: Silver2,
-      category: "Silver",
-      level: 2,
-      price: 10,
-      attributesMax: 100,
-      attributes: 70,
-      fortuneMax: 100,
-      fortune: 45,
-      durabilityMax: 100,
-      durability: 15,
-    },
-    {
-      tokenId: 4,
-      img: Gold1,
-      category: "Gold",
-      level: 1,
-      price: 10,
-      attributesMax: 100,
-      attributes: 30,
-      fortuneMax: 100,
-      fortune: 40,
-      durabilityMax: 100,
-      durability: 50,
-    },
-    {
-      tokenId: 5,
-      img: Emerald4,
-      category: "Emerald",
-      level: 4,
-      price: 10,
-      attributesMax: 100,
-      attributes: 20,
-      fortuneMax: 100,
-      fortune: 25,
-      durabilityMax: 100,
-      durability: 10,
-    },
-    {
-      tokenId: 6,
-      img: Gold1,
-      category: "Gold",
-      level: 1,
-      price: 10,
-      attributesMax: 100,
-      attributes: 90,
-      fortuneMax: 100,
-      fortune: 55,
-      durabilityMax: 100,
-      durability: 80,
-    },
-    {
-      tokenId: 7,
-      img: Bronze3,
-      category: "Bronze",
-      level: 3,
-      price: 10,
-      attributesMax: 100,
-      attributes: 60,
-      fortuneMax: 100,
-      fortune: 20,
-      durabilityMax: 100,
-      durability: 55,
-    },
-    {
-      tokenId: 8,
-      img: Emerald4,
-      category: "Emerald",
-      level: 4,
-      price: 10,
-      attributesMax: 100,
-      attributes: 30,
-      fortuneMax: 100,
-      fortune: 40,
-      durabilityMax: 100,
-      durability: 50,
-    },
-    {
-      tokenId: 9,
-      img: Bronze3,
-      category: "Bronze",
-      level: 3,
-      price: 10,
-      attributesMax: 100,
-      attributes: 20,
-      fortuneMax: 100,
-      fortune: 80,
-      durabilityMax: 100,
-      durability: 10,
-    },
-    {
-      tokenId: 10,
-      img: Silver2,
-      category: "Silver",
-      level: 2,
-      price: 10,
-      attributesMax: 100,
-      attributes: 70,
-      fortuneMax: 100,
-      fortune: 45,
-      durabilityMax: 100,
-      durability: 15,
-    },
-    {
-      tokenId: 11,
-      img: Gold1,
-      category: "Gold",
-      level: 1,
-      price: 10,
-      attributesMax: 100,
-      attributes: 30,
-      fortuneMax: 100,
-      fortune: 40,
-      durabilityMax: 100,
-      durability: 50,
-    },
-    {
-      tokenId: 12,
-      img: Emerald4,
-      category: "Emerald",
-      level: 4,
-      price: 10,
-      attributesMax: 100,
-      attributes: 20,
-      fortuneMax: 100,
-      fortune: 25,
-      durabilityMax: 100,
-      durability: 10,
-    },
-    {
-      tokenId: 13,
-      img: Gold1,
-      category: "Gold",
-      level: 1,
-      price: 10,
-      attributesMax: 100,
-      attributes: 90,
-      fortuneMax: 100,
-      fortune: 55,
-      durabilityMax: 100,
-      durability: 80,
-    },
-    {
-      tokenId: 14,
-      img: Bronze3,
-      category: "Bronze",
-      level: 3,
-      price: 10,
-      attributesMax: 100,
-      attributes: 60,
-      fortuneMax: 100,
-      fortune: 20,
-      durabilityMax: 100,
-      durability: 55,
-    },
-    {
-      tokenId: 15,
-      img: Emerald4,
-      category: "Emerald",
-      level: 4,
-      price: 10,
-      attributesMax: 100,
-      attributes: 30,
-      fortuneMax: 100,
-      fortune: 40,
-      durabilityMax: 100,
-      durability: 50,
-    },
-    {
-      tokenId: 16,
-      img: Bronze3,
-      category: "Bronze",
-      level: 3,
-      price: 10,
-      attributesMax: 100,
-      attributes: 20,
-      fortuneMax: 100,
-      fortune: 80,
-      durabilityMax: 100,
-      durability: 10,
-    },
-    {
-      tokenId: 17,
-      img: Silver2,
-      category: "Silver",
-      level: 2,
-      price: 10,
-      attributesMax: 100,
-      attributes: 70,
-      fortuneMax: 100,
-      fortune: 45,
-      durabilityMax: 100,
-      durability: 15,
-    },
-    {
-      tokenId: 18,
-      img: Gold1,
-      category: "Gold",
-      level: 1,
-      price: 10,
-      attributesMax: 100,
-      attributes: 30,
-      fortuneMax: 100,
-      fortune: 40,
-      durabilityMax: 100,
-      durability: 50,
-    },
-    {
-      tokenId: 19,
-      img: Emerald4,
-      category: "Emerald",
-      level: 4,
-      price: 10,
-      attributesMax: 100,
-      attributes: 20,
-      fortuneMax: 100,
-      fortune: 25,
-      durabilityMax: 100,
-      durability: 10,
-    },
-    {
-      tokenId: 20,
-      img: Gold1,
-      category: "Gold",
-      level: 1,
-      price: 10,
-      attributesMax: 100,
-      attributes: 90,
-      fortuneMax: 100,
-      fortune: 55,
-      durabilityMax: 100,
-      durability: 80,
-    },
-    {
-      tokenId: 21,
-      img: Bronze3,
-      category: "Bronze",
-      level: 3,
-      price: 10,
-      attributesMax: 100,
-      attributes: 60,
-      fortuneMax: 100,
-      fortune: 20,
-      durabilityMax: 100,
-      durability: 55,
-    },
-    {
-      tokenId: 22,
-      img: Emerald4,
-      category: "Emerald",
-      level: 4,
-      price: 10,
-      attributesMax: 100,
-      attributes: 30,
-      fortuneMax: 100,
-      fortune: 40,
-      durabilityMax: 100,
-      durability: 50,
-    },
-  ];
+  const [plates, setPlates] = useState([]);
+  const [history, setHistory] = useState([]);
+  const { isConnected, address } = useAccount();
+  const { data: signer, isError } = useSigner();
+  const provider = useProvider();
+  const contract = new ethers.Contract(
+    config.contractAddress,
+    config.abi,
+    signer
+  );
 
-  const historyDetails = [
-    {
-      restaurantName: "Gulati Restaurant",
-      maticCoins: 20,
-      eatCoins: 10,
-      details: "2 x Bhature",
-    },
-    {
-      restaurantName: "Gulati Restaurant",
-      maticCoins: 20,
-      eatCoins: 10,
-      details: "2 x Bhature",
-    },
-    {
-      restaurantName: "Gulati Restaurant",
-      maticCoins: 20,
-      eatCoins: 10,
-      details: "2 x Bhature",
-    },
-    {
-      restaurantName: "Gulati Restaurant",
-      maticCoins: 20,
-      eatCoins: 10,
-      details: "2 x Bhature",
-    },
-  ];
+  const buyPlate = async (plate) => {
+    try {
+      const tx = await contract.buyPlate(plate.id, {
+        value: ethers.utils.parseEther(plate.price.toString()),
+      });
+      await toast.promise(tx.wait(), {
+        pending: "Buying Plate",
+        success: "Plate Bought Successfully 👌",
+        error: "Error Buying Plate",
+      });
+      await getMarketItems();
+    } catch (e) {
+      toast.error(e.error.data.message.replaceAll("execution reverted: ", ""));
+    }
+  };
+
+  //get all EatFinished events from contract
+  const getHistory = async () => {
+    const filters = contract.filters.EatFinished(apiPointsData.id);
+    contract.queryFilter(filters).then((events) => {
+      //put events data in history array
+
+      const list = events.map(async (event) => {
+        console.log(event.args);
+        const restaurant = await contract.idToRestaurant(event.args[1]);
+        const data = await (
+          await fetch(
+            "https://" +
+              restaurant.info.replace("ipfs://", "") +
+              ".ipfs.nftstorage.link"
+          )
+        ).json();
+        return {
+          restaurantId: event.args[1],
+          restaurantName: data.name,
+          restaurantAddress: data.address,
+          restaurantImage: data.image,
+          amount: (BigNumber.from(event.args[2]).toNumber() / 10 ** 6).toFixed(
+            2
+          ),
+          eatCoinsMinted: (
+            BigNumber.from(event.args[3]).toNumber() /
+            10 ** 8
+          ).toFixed(2),
+        };
+      });
+      const history = Promise.all(list);
+      setHistory(history);
+    });
+  };
+
+  const getMarketItems = async () => {
+    const marketItems = await contract.getMarketplaceItems();
+    const items = marketItems.map(async (item) => {
+      const price = ethers.utils.formatUnits(item.price.toString(), "ether");
+      //console.log(item);
+      const plate = await contract.idToEatPlate(item.tokenId);
+      const image = getImage(plate.category, plate.level);
+      const category = getCategory(plate.category);
+
+      return {
+        id: item.id.toNumber(),
+        price: price,
+        owner: item.owner,
+        tokenId: item.tokenId.toNumber(),
+        level: plate.level,
+        category: category,
+        durability: plate.durablity.toNumber(),
+        efficiency: plate.efficiency.toNumber(),
+        fortune: plate.fortune.toNumber(),
+        img: image,
+        active: item.active,
+        //img, max
+      };
+    });
+    const finalItems = await Promise.all(items);
+    const filteredPlates = finalItems.filter((item) => item.active == true);
+    setPlates(filteredPlates);
+  };
+
+  const getMyPlate = async () => {
+    const plate = await contract.getPlatesOfOwner(address);
+
+    if (BigNumber.from(plate.id).eq(BigNumber.from(0))) {
+      sethasNft(false);
+    } else {
+      const image = getImage(plate.category, plate.level);
+      const category = getCategory(plate.category);
+      const costPerShiny = (plate.level * 12) / plate.durablity.toNumber() ** 2;
+      const shinyCost = (100 - plate.durablity.toNumber()) * costPerShiny;
+      console.log(shinyCost);
+      setApiPointsData({
+        id: plate.id.toNumber(),
+        level: plate.level,
+        category: category,
+        durability: plate.durablity.toNumber(),
+        efficiency: plate.efficiency.toNumber(),
+        fortune: plate.fortune.toNumber(),
+        img: image,
+        shiny: plate.shiny.toNumber(),
+        shinyCost: shinyCost,
+        //img, max
+      });
+      setPointsData({
+        durability: plate.durablity.toNumber(),
+        efficiency: plate.efficiency.toNumber(),
+        fortune: plate.fortune.toNumber(),
+      });
+      sethasNft(true);
+    }
+  };
+
+  const clean = async () => {
+    try {
+      const tx = await contract.clean(apiPointsData.id);
+      await toast.promise(tx.wait(), {
+        pending: "Cleaning Plate 🧼",
+        success: "Cleaning Successful 👌",
+        error: "Bad cleaning",
+      });
+      await getMyPlate();
+    } catch (e) {
+      toast.error(e.error.data.message.replaceAll("execution reverted: ", ""));
+    }
+  };
+
+  const eat = async () => {
+    try {
+      console.log(
+        apiPointsData.id,
+        qrData.id,
+        qrData.signature,
+        qrData.nonce,
+        qrData.message
+      );
+      const tx = await contract.eat(
+        apiPointsData.id,
+        qrData.id,
+        qrData.signature,
+        qrData.nonce,
+        qrData.message,
+        BigNumber.from(parseFloat(qrData.amountInUsd) * 10 ** 6)
+      );
+
+      //1085fe8c0826061159c156984748f0f8b2118e110fb20f1b859dbc2a29005f0e
+
+      /*       event EatFinished(
+        uint256 plateId,
+        uint256 restaurantId,
+        uint256 amount,
+        uint256 eatCoinsMinted
+    ); */
+      await toast.promise(tx.wait(), {
+        pending: "Eating on Plate 🍽️...",
+        success: "Eating Successful 👌",
+        error: "Bad eating",
+      });
+
+      const filter = {
+        address: config.contractAddress,
+        topics: [
+          utils.id("EatFinished(uint256,uint256,uint256,uint256)"),
+          utils.hexZeroPad(utils.hexlify(apiPointsData.id), 32),
+        ],
+      };
+
+      contract.once(
+        filter,
+        async (plateId, restaurantId, amount, eatCoinsMinted) => {
+          toast.success(
+            `You got ${(
+              BigNumber.from(eatCoinsMinted).toNumber() /
+              10 ** 8
+            ).toFixed(2)} Eatcoins from eating 👌`
+          );
+          setPaymentSuccessModal(true);
+          await getMyPlate();
+          setPaymentSuccess({
+            plateId: plateId.toNumber(),
+            restaurantId: restaurantId.toNumber(),
+            amount: (BigNumber.from(amount).toNumber() / 10 ** 6).toFixed(2),
+            eatCoinsMinted: (
+              BigNumber.from(eatCoinsMinted).toNumber() /
+              10 ** 8
+            ).toFixed(2),
+          });
+        }
+      );
+    } catch (e) {
+      toast.error(e.error.data.message.replaceAll("execution reverted: ", ""));
+    }
+  };
+
+  const spinWheel = async () => {
+    try {
+      const tx = await contract.spinWheel(apiPointsData.id);
+
+      await toast.promise(tx.wait(), {
+        pending: "Spinning Wheel 🎡...",
+        success: "Waiting for chainlink...",
+        error: "Bad eating",
+      });
+
+      const filter = {
+        address: config.contractAddress,
+        topics: [
+          utils.id("SpinFinished(uint256,uint256,uint256)"),
+          utils.hexZeroPad(utils.hexlify(apiPointsData.id), 32),
+        ],
+      };
+
+      contract.once(
+        filter,
+        async (plateId, restaurantId, amount, eatCoinsMinted) => {
+          toast.success(
+            `You got ${(
+              BigNumber.from(eatCoinsMinted).toNumber() /
+              10 ** 8
+            ).toFixed(2)} Eatcoins from spinning 👌`
+          );
+          //todo setSpinwheel modal to false
+          await getMyPlate();
+        }
+      );
+    } catch (e) {
+      toast.error(e.error.data.message.replaceAll("execution reverted: ", ""));
+    }
+  };
+
+  const levelUp = async () => {
+    try {
+      const efficency = pointsData.efficiency - apiPointsData.efficiency;
+      const durability = pointsData.durability - apiPointsData.durability;
+      const fortune = pointsData.fortune - apiPointsData.fortune;
+      const tx = await contract.levelUp(
+        efficency,
+        fortune,
+        durability,
+        apiPointsData.id
+      );
+      await toast.promise(tx.wait(), {
+        pending: "Leveling Up",
+        success: "Level Up Successful",
+        error: "Error Leveling Up",
+      });
+      await getMyPlate();
+    } catch (e) {
+      toast.error("Something went wrong");
+    }
+  };
+
+  const sellNft = async () => {
+    try {
+      const approved = await contract.isApprovedForAll(
+        address,
+        config.contractAddress
+      );
+      if (!approved) {
+        const tx = await contract.setApprovalForAll(
+          config.contractAddress,
+          true
+        );
+
+        await toast.promise(tx.wait(), {
+          pending: "Approving...",
+          success: "Approval successful 👌",
+          error: "Approval rejected 🤯",
+        });
+      }
+
+      const tx = await contract.listPlate(
+        apiPointsData.id,
+        ethers.utils.parseEther(sellingPrice.toString())
+      );
+
+      await toast.promise(tx.wait(), {
+        pending: "Listing Plate...",
+        success: "Plate listing successful 👌",
+        error: "Listing rejected 🤯",
+      });
+
+      await getMyPlate();
+      await getMarketItems();
+    } catch (e) {
+      toast.error("Something went wrong");
+    }
+  };
+
+  useEffect(() => {
+    if (signer) {
+      getMyPlate();
+
+      contract.balanceOf(address, 0).then((balance) => {
+        setBalance(balance.div(10 ** 8).toNumber());
+      });
+
+      getMarketItems();
+      getHistory();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signer]);
 
   const increment = (value) => {
     if (totalPoints > 0) {
@@ -426,8 +431,33 @@ const HomePage = () => {
       }
     } else return;
   };
-
-  return (
+  return isScanning ? (
+    <div className="main bg-mainBg flex flex-col justify-start">
+      {/* {isLoading && <p className="text-white text-xl3">Loading........</p>} */}
+      <QrReader
+        className="video"
+        onError={() => {
+          toast.info("Something went wrong");
+          setIsScanning(false);
+        }}
+        onLoad={() => {
+          if (!isLoading) {
+            toast.success("Scan the reciept QR code");
+            setIsLoading(true);
+          }
+        }}
+        onScan={(data) => {
+          if (data != null) {
+            console.log(data);
+            setIsScanning(false);
+            const qrJson = JSON.parse(data.text);
+            setQrData(qrJson);
+            setPaymentConfirmModal(true);
+          }
+        }}
+      />
+    </div>
+  ) : (
     <div className="main flex flex-col justify-start items-center bg-mainBg overflow-hidden">
       {/* Modal for Level Up */}
       <ReactModal
@@ -453,19 +483,28 @@ const HomePage = () => {
             ></Image>
           </span>
           <div className="mx-6 mt-4">
-            <Image alt="sample nft" src={Nft} width="150" height="150"></Image>
+            <Image
+              alt="sample nft"
+              src={apiPointsData.img}
+              width="150"
+              height="150"
+            ></Image>
           </div>
           <span className="font-semibold text-2xl italic mt-4">
-            Level {currLevel}
+            Level {apiPointsData.level} to {apiPointsData.level + 1}
           </span>
           <div className="h-auto w-full flex flex-col justify-start">
-            {currLevel != 4 ? (
+            {apiPointsData.level != 4 ? (
               <div className="flex flex-col justify-center items-center w-full">
                 <div className="w-full flex flex-row justify-between items-baseline mb-4 mt-4 px-4">
                   <span className="font-semibold text-xl italic  flex flex-row items-end">
                     Cost:{" "}
-                    <span className="font-semibold text-3xl not-italic ml-2">
-                      {levelUpCost}
+                    <span className="font-semibold text-xl not-italic ml-2">
+                      {apiPointsData.level == 1
+                        ? 100
+                        : apiPointsData.level == 2
+                        ? 180
+                        : 350}
                     </span>
                     <Image
                       alt="Eat Coin"
@@ -477,7 +516,7 @@ const HomePage = () => {
                   </span>
                   <span className="font-semibold text-xl italic  flex flex-row items-end">
                     Bal:{" "}
-                    <span className="font-semibold text-3xl not-italic ml-2">
+                    <span className="font-semibold text-xl not-italic ml-2">
                       {balance}
                     </span>
                     <Image
@@ -490,7 +529,11 @@ const HomePage = () => {
                   </span>
                 </div>
                 {/* If Current Balance is lower than Cost */}
-                {levelUpCost > balance && (
+                {(apiPointsData.level == 1
+                  ? 100
+                  : apiPointsData.level == 2
+                  ? 180
+                  : 350) > balance && (
                   <span className="font-medium text-base italic text-center">
                     Current Balance is lower than Level Up cost
                   </span>
@@ -523,7 +566,11 @@ const HomePage = () => {
               width="w-[46%]"
               height="h-[3rem]"
               bg={`${
-                levelUpCost > balance || currLevel == 4
+                (apiPointsData.level == 1
+                  ? 100
+                  : apiPointsData.level == 2
+                  ? 180
+                  : 350) > balance || apiPointsData.level == 4
                   ? "bg-disabled"
                   : "bg-mainBg/90"
               }`}
@@ -532,7 +579,13 @@ const HomePage = () => {
                 setAddPointsModal(true);
                 setLevelUpModal(false);
               }}
-              disabled={levelUpCost > balance || currLevel == 4}
+              disabled={
+                (apiPointsData.level == 1
+                  ? 100
+                  : apiPointsData.level == 2
+                  ? 180
+                  : 350) > balance || apiPointsData.level == 4
+              }
             ></Button>
           </div>
         </div>
@@ -637,6 +690,10 @@ const HomePage = () => {
               height="h-[3rem]"
               bg="bg-mainBg/90"
               title="CONFIRM"
+              action={async () => {
+                setAddPointsModal(false);
+                await levelUp();
+              }}
             ></Button>
           </div>
         </div>
@@ -658,16 +715,23 @@ const HomePage = () => {
         <div className="h-auto w-[90%] bg-bg2/80 rounded-[2rem] border-[3px] mx-6 mt-[20%] flex flex-col justify-start items-center p-4 z-[20]">
           <span className="font-bold text-3xl">Sell NFT </span>
           <div className="mx-6 mt-4">
-            <Image alt="sample nft" src={Nft} width="200" height="200"></Image>
+            <Image
+              alt="sample nft"
+              src={apiPointsData.img}
+              width="200"
+              height="200"
+            ></Image>
           </div>
           <div className="w-[70%] flex flex-row justify-around items-center mt-4">
-            <span className="font-semibold text-2xl italic">Emerald</span>
             <span className="font-semibold text-2xl italic">
-              Level {currLevel}
+              {apiPointsData.category}
+            </span>
+            <span className="font-semibold text-2xl italic">
+              Level {apiPointsData.level}
             </span>
           </div>
           <div className="w-[95%] h-[14vh] flex flex-col justify-start items-center pt-2 mb-3">
-            {currShiny < 100 ? (
+            {apiPointsData.shiny < 100 ? (
               <span className="font-bold text-xl text-center mt-4">
                 Your Shiny should be 100% to list your NFT for sale
               </span>
@@ -714,10 +778,15 @@ const HomePage = () => {
             <Button
               width="w-[46%]"
               height="h-[3rem]"
-              bg={`${currShiny < 100 ? "bg-disabled" : "bg-mainBg/90"}`}
+              bg={`${
+                apiPointsData.shiny < 100 ? "bg-disabled" : "bg-mainBg/90"
+              }`}
               title="CONFIRM"
-              action={() => {}}
-              disabled={currShiny > 100}
+              action={async () => {
+                setSellNftModal(false);
+                await sellNft();
+              }}
+              disabled={apiPointsData.shiny > 100}
             ></Button>
           </div>
         </div>
@@ -850,9 +919,9 @@ const HomePage = () => {
       >
         <div className="h-auto w-[90%] bg-bg2/80 rounded-[2rem] border-[3px] mx-6 mt-[40%] flex flex-col justify-start items-center p-4 z-[10]">
           <span className="font-bold text-3xl">Confirm Payment</span>
-          <span className="font-medium text-xl mt-4">Restaurant Name</span>
+          <span className="font-medium text-xl mt-4">{qrData.name}</span>
           <div className="w-[85%] h-auto py-4 px-2 bg-bg1 rounded-xl mt-2 border-[2px] border-text2 text-text1 flex flex-col justify-start items-start">
-            <span>2 x Bhature</span>
+            <span>{qrData.description}</span>
           </div>
           <div className="w-[90%] flex flex-row justify-between items-start mt-4">
             <div className="flex flex-col justify-center items-start">
@@ -860,7 +929,7 @@ const HomePage = () => {
               <div className="w-full flex flex-col justify-start items-start mt-2">
                 <span className="font-bold text-xl">
                   <span className="ml-2">$</span>{" "}
-                  <span className="ml-3">{400}</span>
+                  <span className="ml-3">{qrData.amountInUsd}</span>
                 </span>
                 <span className="font-bold text-xl flex flex-row justify-center items-center mt-2">
                   <Image
@@ -870,6 +939,9 @@ const HomePage = () => {
                     height="30"
                   ></Image>
                   <span className="ml-2">{30}</span>
+                  {
+                    // todo : change the amount of matic from price
+                  }
                 </span>
               </div>
             </div>
@@ -884,7 +956,10 @@ const HomePage = () => {
                     height="30"
                   ></Image>
                   {/* <span className="mx-2">+</span> */}
-                  <span className="ml-2">+{300}</span>
+                  <span className="ml-2">+{8}</span>{" "}
+                  {
+                    //todo add good approximation
+                  }
                 </span>
               </div>
             </div>
@@ -902,10 +977,11 @@ const HomePage = () => {
             <Button
               width="w-[46%]"
               height="h-[3rem]"
-              bg={`${currShiny < 100 ? "bg-disabled" : "bg-mainBg/90"}`}
+              bg="bg-mainBg/90"
               title="CONFIRM"
-              action={() => {}}
-              disabled={currShiny > 100}
+              action={async () => {
+                await eat();
+              }}
             ></Button>
           </div>
         </div>
@@ -929,7 +1005,7 @@ const HomePage = () => {
           <div className="w-[70%] flex flex-row justify-between items-center mt-6">
             <span className="font-bold text-[2rem] flex flex-row justify-center items-center">
               <span className="ml-2">$</span>{" "}
-              <span className="ml-3">{400}</span>
+              <span className="ml-3">{paymentSuccess.amount}</span>
             </span>
             <span className="font-bold text-[2rem] flex flex-row justify-center items-center">
               <Image
@@ -938,21 +1014,20 @@ const HomePage = () => {
                 width="30"
                 height="30"
               ></Image>
-              <span className="ml-2">{30}</span>
+              <span className="ml-2">{paymentSuccess.eatCoinsMinted}</span>
             </span>
           </div>
           <span className="font-bold text-xl mt-4">You Got</span>
           <span className="font-bold text-[2rem] flex flex-row justify-center items-center mt-4">
-          <span>{30}</span>
-              <Image
-                alt="Matic Logo"
-                src={EatCoin}
-                width="30"
-                height="30"
-                className="ml-2"
-              ></Image>
-             
-            </span>
+            <span>{30}</span>
+            <Image
+              alt="Matic Logo"
+              src={EatCoin}
+              width="30"
+              height="30"
+              className="ml-2"
+            ></Image>
+          </span>
           <div className="w-full flex flex-row justify-between items-center px-2 mt-6">
             <Button
               width="w-[46%]"
@@ -966,10 +1041,12 @@ const HomePage = () => {
             <Button
               width="w-[46%]"
               height="h-[3rem]"
-              bg={`${currShiny < 100 ? "bg-disabled" : "bg-mainBg/90"}`}
+              bg={`${"bg-mainBg/90"}`}
               title="CONFIRM"
-              action={() => {}}
-              disabled={currShiny > 100}
+              action={async () => {
+                //await eat();
+              }}
+              /* disabled={apiPointsData.shiny > 100} */
             ></Button>
           </div>
         </div>
@@ -979,12 +1056,12 @@ const HomePage = () => {
       <Navbar setNavStatus={setNavStatus}></Navbar>
       {navStatus.home ? (
         <div className="w-full px-6 mt-[12vh] mb-[10vh] flex flex-col justify-center items-center">
-          {!hasNft ? (
+          {hasNft ? (
             <>
               <div className="mx-6">
                 <Image
                   alt="sample nft"
-                  src={Nft}
+                  src={apiPointsData.img}
                   width="200"
                   height="200"
                 ></Image>
@@ -995,14 +1072,14 @@ const HomePage = () => {
                   height="h-[3rem]"
                   bg="bg-bg2"
                   textSize="text-xl"
-                  title="Emerald"
+                  title={apiPointsData.category}
                 ></CurvedButton>
                 <CurvedButton
                   width="w-[8rem]"
                   height="h-[3rem]"
                   bg="bg-bg2"
                   textSize="text-xl"
-                  title={`Level ${currLevel}`}
+                  title={`Level ${apiPointsData.level}`}
                 ></CurvedButton>
               </div>
               <div className="w-full flex flex-row justify-center items-center mt-10">
@@ -1011,12 +1088,12 @@ const HomePage = () => {
                   height="h-[5rem]"
                   title="Shiny"
                   max={100}
-                  progress={progress}
+                  progress={apiPointsData.shiny}
                   // progress="w-[100%]"
-                  title2={progress}
+                  title2={apiPointsData.shiny}
                 ></ProgressButton>
               </div>
-              <NftAtrributes></NftAtrributes>
+              <NftAtrributes apiPointsData={apiPointsData}></NftAtrributes>
             </>
           ) : (
             <div className="w-full h-[50vh] mt-[12vh] flex flex-col justify-center items-center">
@@ -1079,11 +1156,14 @@ const HomePage = () => {
             ></CurvedButton>
           </div>
           <div className="w-full h-auto grid grid-cols-2 gap-4 mt-8 overflow-scroll px-2">
-            {nftPlates.map((nftPlate) => (
+            {plates.map((nftPlate) => (
               <div
                 key={nftPlate}
+                onClick={async () => {
+                  await buyPlate(nftPlate);
+                }}
                 className={`${
-                  nftPlates[nftPlates.length - 1].tokenId == nftPlate.tokenId &&
+                  plates[plates.length - 1].tokenId == nftPlate.tokenId &&
                   "mb-[15rem]"
                 }`}
               >
@@ -1100,9 +1180,9 @@ const HomePage = () => {
             {/* <span className="text-text1 text-xl font-semibold italic mt-10">You do not have history</span> */}
             {/* If History is Empty */}
             <div className="w-full h-full flex flex-col justify-start items-center mt-8">
-              {historyDetails.map((historyDetail) => (
+              {history.map((historyDetail) => (
                 <HistoryDetails
-                  key={historyDetail.details}
+                  key={historyDetail.restaurantId}
                   historyDetail={historyDetail}
                 ></HistoryDetails>
               ))}
@@ -1117,6 +1197,7 @@ const HomePage = () => {
         setLevelUpModal={setLevelUpModal}
         setNavStatus={setNavStatus}
         setSellNftModal={setSellNftModal}
+        setIsScanning={setIsScanning}
       ></Footer>
     </div>
   );
