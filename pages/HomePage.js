@@ -124,7 +124,9 @@ const HomePage = () => {
     } else {
       const image = getImage(plate.category, plate.level);
       const category = getCategory(plate.category);
-
+      const costPerShiny = (plate.level * 12) / plate.durablity.toNumber() ** 2;
+      const shinyCost = (100 - plate.durablity.toNumber()) * costPerShiny;
+      console.log(shinyCost);
       setApiPointsData({
         id: plate.id.toNumber(),
         level: plate.level,
@@ -134,6 +136,7 @@ const HomePage = () => {
         fortune: plate.fortune.toNumber(),
         img: image,
         shiny: plate.shiny.toNumber(),
+        shinyCost: shinyCost,
         //img, max
       });
       setPointsData({
@@ -142,6 +145,20 @@ const HomePage = () => {
         fortune: plate.fortune.toNumber(),
       });
       sethasNft(true);
+    }
+  };
+
+  const clean = async () => {
+    try {
+      const tx = await contract.clean(apiPointsData.id);
+      await toast.promise(tx.wait(), {
+        pending: "Cleaning Plate 🧼",
+        success: "Cleaning Successful 👌",
+        error: "Bad cleaning",
+      });
+      await getMyPlate();
+    } catch (e) {
+      toast.error("Something went wrong");
     }
   };
 
@@ -589,13 +606,15 @@ const HomePage = () => {
             <Button
               width="w-[46%]"
               height="h-[3rem]"
-              bg={`${currShiny < 100 ? "bg-disabled" : "bg-mainBg/90"}`}
+              bg={`${
+                apiPointsData.shiny < 100 ? "bg-disabled" : "bg-mainBg/90"
+              }`}
               title="CONFIRM"
               action={async () => {
                 setSellNftModal(false);
                 await sellNft();
               }}
-              disabled={currShiny > 100}
+              disabled={apiPointsData.shiny > 100}
             ></Button>
           </div>
         </div>
@@ -844,11 +863,11 @@ const HomePage = () => {
               width="w-[46%]"
               height="h-[3rem]"
               bg={`${
-                apiPointsData.shinny < 100 ? "bg-disabled" : "bg-mainBg/90"
+                apiPointsData.shiny < 100 ? "bg-disabled" : "bg-mainBg/90"
               }`}
               title="CONFIRM"
               action={() => {}}
-              disabled={apiPointsData.shinny > 100}
+              disabled={apiPointsData.shiny > 100}
             ></Button>
           </div>
         </div>
