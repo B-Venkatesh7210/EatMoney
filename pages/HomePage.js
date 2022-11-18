@@ -13,7 +13,7 @@ import ReactModal from "react-modal";
 import Button from "../components/Button";
 import Matic from "../assets/logos/Polygon Matic.png";
 import NftPlateMP from "../components/NftPlateMP";
-
+import { useZxing } from "react-zxing";
 import HistoryDetails from "../components/HistoryDetails";
 import { useAccount, useSigner, useContract, useProvider } from "wagmi";
 import { BigNumber, ethers } from "ethers";
@@ -28,6 +28,20 @@ const HomePage = () => {
     marketPlace: false,
     history: false,
   });
+  const [isScanning, setIsScanning] = useState(false);
+  const [qrData, setQrData] = useState("");
+  const { ref } = useZxing({
+    onResult(result) {
+      console.log(result.getText());
+      setQrData(result.getText());
+      setIsScanning(false);
+      const qrJson = JSON.parse(qrData);
+      setRestaurantData(qrJson);
+      setPaymentConfirmModal(true);
+    },
+  });
+
+  const [restaurantData, setRestaurantData] = useState({});
   const [levelUpModal, setLevelUpModal] = useState(false);
   const [addPointsModal, setAddPointsModal] = useState(false);
   const [sellNftModal, setSellNftModal] = useState(false);
@@ -162,6 +176,27 @@ const HomePage = () => {
     }
   };
 
+  const eat = async () => {
+    try {
+      const tx = await contract.eat(
+        apiPointsData.id,
+        qrData.id,
+        qrData.sig,
+        qrData.nonce,
+        qrData.message,
+        BigNumber.from(qrData.amountInUsd).mul(10 ** 6)
+      );
+      await toast.promise(tx.wait(), {
+        pending: "Eating on Plate 🍽️...",
+        success: "Eating Successful 👌",
+        error: "Bad eating",
+      });
+      await getMyPlate();
+    } catch (e) {
+      toast.error("Something went wrong");
+    }
+  };
+
   const levelUp = async () => {
     try {
       const efficency = pointsData.efficiency - apiPointsData.efficiency;
@@ -285,7 +320,13 @@ const HomePage = () => {
     } else return;
   };
 
-  return (
+  return isScanning ? (
+    <video
+      ref={ref}
+      style={{ width: "100%", maxWidth: "400px", border: "1px solid black" }}
+      muted
+    />
+  ) : (
     <div className="main flex flex-col justify-start items-center bg-mainBg overflow-hidden">
       {/* Modal for Level Up */}
       <ReactModal
@@ -747,9 +788,9 @@ const HomePage = () => {
       >
         <div className="h-auto w-[90%] bg-bg2/80 rounded-[2rem] border-[3px] mx-6 mt-[40%] flex flex-col justify-start items-center p-4 z-[10]">
           <span className="font-bold text-3xl">Confirm Payment</span>
-          <span className="font-medium text-xl mt-4">Restaurant Name</span>
+          <span className="font-medium text-xl mt-4">{qrData.name}</span>
           <div className="w-[85%] h-auto py-4 px-2 bg-bg1 rounded-xl mt-2 border-[2px] border-text2 text-text1 flex flex-col justify-start items-start">
-            <span>2 x Bhature</span>
+            <span>{qrData.description}</span>
           </div>
           <div className="w-[90%] flex flex-row justify-between items-start mt-4">
             <div className="flex flex-col justify-center items-start">
@@ -757,7 +798,7 @@ const HomePage = () => {
               <div className="w-full flex flex-col justify-start items-start mt-2">
                 <span className="font-bold text-xl">
                   <span className="ml-2">$</span>{" "}
-                  <span className="ml-3">{400}</span>
+                  <span className="ml-3">{qrData.amountInUsd}</span>
                 </span>
                 <span className="font-bold text-xl flex flex-row justify-center items-center mt-2">
                   <Image
@@ -767,6 +808,9 @@ const HomePage = () => {
                     height="30"
                   ></Image>
                   <span className="ml-2">{30}</span>
+                  {
+                    // todo : change the amount of matic from price
+                  }
                 </span>
               </div>
             </div>
@@ -781,7 +825,10 @@ const HomePage = () => {
                     height="30"
                   ></Image>
                   {/* <span className="mx-2">+</span> */}
-                  <span className="ml-2">+{300}</span>
+                  <span className="ml-2">+{8}</span>{" "}
+                  {
+                    //todo add good approximation
+                  }
                 </span>
               </div>
             </div>
@@ -799,10 +846,11 @@ const HomePage = () => {
             <Button
               width="w-[46%]"
               height="h-[3rem]"
-              bg={`${currShiny < 100 ? "bg-disabled" : "bg-mainBg/90"}`}
+              bg="bg-mainBg/90"
               title="CONFIRM"
-              action={() => {}}
-              disabled={currShiny > 100}
+              action={async () => {
+                await eat();
+              }}
             ></Button>
           </div>
         </div>
@@ -862,12 +910,12 @@ const HomePage = () => {
             <Button
               width="w-[46%]"
               height="h-[3rem]"
-              bg={`${
-                apiPointsData.shiny < 100 ? "bg-disabled" : "bg-mainBg/90"
-              }`}
+              bg={`${"bg-mainBg/90"}`}
               title="CONFIRM"
-              action={() => {}}
-              disabled={apiPointsData.shiny > 100}
+              action={async () => {
+                //await eat();
+              }}
+              /* disabled={apiPointsData.shiny > 100} */
             ></Button>
           </div>
         </div>
@@ -1018,7 +1066,7 @@ const HomePage = () => {
         setLevelUpModal={setLevelUpModal}
         setNavStatus={setNavStatus}
         setSellNftModal={setSellNftModal}
-        setEatModal={setPaymentConfirmModal}
+        setIsScanning={setIsScanning}
       ></Footer>
     </div>
   );

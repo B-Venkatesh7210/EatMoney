@@ -100,6 +100,7 @@ const Restaurant = () => {
         name: restaurant.name,
         amountInUsd: receiptData.totalCharge,
         description: receiptData.receiptDetails,
+        message: message,
         nonce: nonce,
         signature: sig,
         image: restaurant.image,
@@ -237,10 +238,16 @@ const Restaurant = () => {
             />
           </div>
           <span className="flex flex-row justify-center items-center font-medium text-xl text-center italic mt-4">
-            Total Charge: $ {receiptData.totalCharge} ~{" "}
-            {(price.mul(receiptData.totalCharge).toNumber() / 10 ** 8).toFixed(
-              3
-            )}
+            Total Charge: $ {receiptData.totalCharge.toString()} ~{" "}
+            {(
+              price
+                .mul(
+                  BigNumber.from(parseFloat(receiptData.totalCharge) * 10 ** 6)
+                )
+                .div(10 ** 6)
+                .toNumber() /
+              10 ** 8
+            ).toFixed(3)}
             <Image
               alt="Matic Logo"
               src={Matic}

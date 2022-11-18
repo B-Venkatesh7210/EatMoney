@@ -18,7 +18,7 @@ const NftPlateMP = ({ nftPlate }) => {
         <span className="font-bold text-base">Level {nftPlate.level}</span>
       </div>
       <span className="font-bold text-lg mt-1 flex flex-row justify-center items-center">
-        {nftPlate.price}{" "}
+        {nftPlate.price}
         <Image
           alt="Matic Logo"
           src={Matic}

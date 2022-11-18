@@ -11,7 +11,7 @@ const Footer = ({
   setLevelUpModal,
   setNavStatus,
   setSellNftModal,
-  setEatModal,
+  setIsScanning,
 }) => {
   return (
     <>
@@ -45,7 +45,7 @@ const Footer = ({
           width="60"
           height="60"
           className="absolute bottom-8 z-10 left-[43%]"
-          onClick={() => setEatModal(true)}
+          onClick={() => setIsScanning(true)}
         ></Image>
         <div className="w-[45%] flex flex-row justify-around items-center">
           <div
