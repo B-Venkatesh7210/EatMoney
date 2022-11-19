@@ -242,6 +242,26 @@ const HomePage = () => {
         success: "Eating Successful 👌",
         error: "Bad eating",
       });
+      history.push({
+        restaurantId: qrData.id,
+        restaurantName: qrData.name,
+        restaurantAddress: qrData.address,
+        description: qrData.description,
+        amount: qrData.amountInUsd,
+        eatCoinsMinted: qrData.earning,
+      });
+
+      const shiny = apiPointsData.shiny - 10;
+      setApiPointsData({
+        ...apiPointsData,
+        shiny: 90,
+      });
+      setPaymentSuccess({
+        plateId: apiPointsData.id,
+        restaurantId: qrData.id,
+        amount: qrData.amountInUsd,
+        eatCoinsMinted: qrData.earning,
+      });
       setPaymentConfirmModal(false);
       setPaymentSuccessModal(true);
       const filter = {
@@ -1039,7 +1059,13 @@ const HomePage = () => {
       >
         <div className="h-auto w-[90%] bg-bg2/80 rounded-[2rem] border-[3px] mx-6 mt-[40%] flex flex-col justify-start items-center p-4 z-[10] paymentSuccess">
           <span className="font-bold text-3xl">Payment Successful</span>
-          <div className="w-[70%] flex flex-row justify-between items-center mt-6">
+          <img
+            src="https://i02.appmifile.com/images/2019/09/10/b3788a8e-24d2-41b3-91c4-131968dab219.gif"
+            alt="spinner"
+            className="m-2"
+          />
+
+          <div className="w-[100%] flex flex-row justify-between items-center mt-6">
             <span className="font-bold text-[2rem] flex flex-row justify-center items-center">
               <span className="ml-2">$</span>{" "}
               <span className="ml-3">{paymentSuccess.amount}</span>
@@ -1051,12 +1077,14 @@ const HomePage = () => {
                 width="30"
                 height="30"
               ></Image>
-              <span className="ml-2">{paymentSuccess.eatCoinsMinted}</span>
+              <span className="ml-2">
+                {(paymentSuccess.amount * parseFloat(price)).toFixed(3)}
+              </span>
             </span>
           </div>
           <span className="font-bold text-xl mt-4">You Got</span>
           <span className="font-bold text-[2rem] flex flex-row justify-center items-center mt-4">
-            <span>{30}</span>
+            <span>{qrData.earning}</span>
             <Image
               alt="Matic Logo"
               src={EatCoin}
